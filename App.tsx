@@ -107,30 +107,6 @@ export class StackNav extends Component<AudioBookProps, any> {
 					/>	
 			}),
 		},
-	}, {
-		initialRouteParams: Home,
-		// Header config from home screen
-		defaultNavigationOptions: {
-			headerStyle: {
-				//backgroundColor: '#000',
-				backgroundColor: 'white',
-			},
-			headerTintColor: '#fff',
-			headerTitleStyle: {
-				color: 'black',	
-			},
-		},
-	});
-
-	// Create the AppContainer from the main stack navigation
-	AppContainer = createAppContainer(this.MainStack);
-	
-	// Render the root stack navigator with the containers as props
-	render() {
-		return <this.AppContainer /> 
-	}
-}	// End of StackNav
-    /*
     FullPlayer: {
 			screen: (props: StackNavProps) => (
 				<FullPlayer
@@ -172,4 +148,26 @@ export class StackNav extends Component<AudioBookProps, any> {
 				};
 			}
     },
-    */ 
+	}, {
+		initialRouteParams: Home,
+		// Header config from home screen
+		defaultNavigationOptions: {
+			headerStyle: {
+				//backgroundColor: '#000',
+				backgroundColor: 'white',
+			},
+			headerTintColor: '#fff',
+			headerTitleStyle: {
+				color: 'black',	
+			},
+		},
+	});
+
+	// Create the AppContainer from the main stack navigation
+	AppContainer = createAppContainer(this.MainStack);
+	
+	// Render the root stack navigator with the containers as props
+	render() {
+		return <this.AppContainer /> 
+	}
+}	// End of StackNav
