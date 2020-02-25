@@ -2,5 +2,6 @@
 export enum ChapterInfo {
     AUDIO,
     IMAGE,
-    TITLE
+    TITLE,
+    AUTHOR
 }

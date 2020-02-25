@@ -7,7 +7,7 @@ import { Chapter } from 'src/interfaces/models/Chapter';
 interface PlayerControlState {
 	audioBook: Book,
 	chapterList: Chapter[], 
-	rate: number, 
+    rate: number,
     paused: boolean,
     ended: boolean,
     totalLength: number, 
@@ -16,7 +16,8 @@ interface PlayerControlState {
 	chapterDuration: number,
     chapterIndex: number,
     isLoading: boolean,
-	isChanging: boolean,
+    isChanging: boolean,
+    isLoaded: boolean
 }
 
 /**
@@ -36,7 +37,8 @@ export default class PlayerControlContainer extends Container<PlayerControlState
 		chapterDuration: 0.0,
         chapterIndex: 0,
         isLoading: true,
-        isChanging: false
+        isChanging: false,
+        isLoaded: false
     }
 
     /**
@@ -70,9 +72,10 @@ export default class PlayerControlContainer extends Container<PlayerControlState
     }
 
     // Playing current chapter sets the states for the current play
-    playingCurrentChapter = (duration: number, paused: boolean) => {
+    playingCurrentChapter = (duration: number, isLoaded: boolean, paused: boolean) => {
         this.setState({
             chapterDuration: duration,
+            isLoaded: isLoaded,
             paused: paused
         })
     }

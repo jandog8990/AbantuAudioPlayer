@@ -20,10 +20,6 @@ import {
  * ChapterDetails element that lists the title of the chapter in FullPlayer
  * @param 
  */
-// chapter,
-// duration,
-// photo_loc,
-// audio_loc 
 const ChapterDetails = ({
   title,
 }) => (
@@ -55,7 +51,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'dimgrey',
+    color: 'black',
     textAlign: 'center',
   },
   artist: {

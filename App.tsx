@@ -103,7 +103,7 @@ export class StackNav extends Component<AudioBookProps, any> {
 					<Icon
 						containerStyle={{paddingRight:20, paddingTop: 5}}
 						type="ionicon"
-						name={Platform.OS === "ios" ? "ios-search" : "md-searchs"}
+						name={Platform.OS === "ios" ? "ios-search" : "md-search"}
 					/>	
 			}),
 		},

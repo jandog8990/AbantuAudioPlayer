@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     paddingTop: 20
   },
   image: {
-    width: 275,
-    height: 417,
+    width: 250,
+    height: 379,
   },
 })

@@ -82,7 +82,7 @@ export default class PlayerController extends Component<PlayerControllerProps, a
         // MusicControl.enableControl('skipBackward', false);
 
 		// Android Specific Options
-		MusicControl.enableControl('setRating', true)
+		// MusicControl.enableControl('setRating', true)
 		MusicControl.enableControl('volume', true) // Only affected when remoteVolume is enabled
 		// MusicControl.enableControl('remoteVolume', false)
 
@@ -99,6 +99,7 @@ export default class PlayerController extends Component<PlayerControllerProps, a
 	setControlNowPlaying = (audioBook: Book, chapter: Chapter) => {
 		console.log("Control Now Playing!");	
 		this.enableMusicControl();	
+			// rating: 0 
 		MusicControl.setNowPlaying({
 			title: chapter.TITLE || "",
 			artwork: chapter.PHOTO_LOC || "",
@@ -106,7 +107,6 @@ export default class PlayerController extends Component<PlayerControllerProps, a
 			album: audioBook.TITLE || "",
 			genre: audioBook.GENRE || "",
 			duration: chapter.DURATION || 0,
-			rating: 0 
 		});
 
 		// const elapsedTime = this.props.playerControlContainer.state.currentPosition;
@@ -114,10 +114,10 @@ export default class PlayerController extends Component<PlayerControllerProps, a
 		console.log("elapsed time = " + elapsedTime);	
 		// MusicControl.setPlayback({
 			// maxVolume: 10,
+			// rating: MusicControl.RATING_HEART 
 		MusicControl.updatePlayback({
 			state: MusicControl.STATE_PLAYING,
 			elapsedTime: elapsedTime,
-			rating: MusicControl.RATING_HEART 
 		});
 	}
 	
@@ -159,7 +159,9 @@ export default class PlayerController extends Component<PlayerControllerProps, a
 			console.log("\n");	
 
 			// Set states for the current playing chapter
-			this.props.playerControlContainer.playingCurrentChapter(chapter.DURATION, false);
+			const paused = false;
+			const isLoaded = true;
+			this.props.playerControlContainer.playingCurrentChapter(chapter.DURATION, isLoaded, paused);
 			
 			// Set the MusicControl module to now playing with playback 
 			this.setControlNowPlaying(audioBook, chapter);

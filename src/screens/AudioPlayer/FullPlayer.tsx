@@ -23,12 +23,13 @@ import Controls from './Controls';
 import Video from 'react-native-video';
 
 import PlayerController from '../../controllers/PlayerController';
+import ChapterController from '../../controllers/ChapterController';
 
 // Import the API configuration for hitting certain endpoints
 import { apiConfig } from '../../config/config';
 import { AudioBookResponse } from 'src/interfaces/network/AudioBookResponse';
-import { Chapter } from 'src/interfaces/models/Chapter';
 import { ChapterInfo } from '../../enums/ChapterInfo';
+import PlayerControls from '../../screens/AudioPlayer/PlayerControls';
 
 import PlayerControlContainer from '../../containers/PlayerControlContainer';
 import { NavigationActions } from 'react-navigation';
@@ -37,9 +38,10 @@ import { Subscribe } from 'unstated';
 export default class FullPlayer extends PlayerController {
 
 	// Initilize the audio player
+	chapterController: ChapterController;
 	audioPlayer;
 	navigation;
-	AUDIO; IMAGE; TITLE;
+	AUDIO; IMAGE; TITLE; AUTHOR;
 	constructor(props) {
 		super(props);
 
@@ -49,6 +51,7 @@ export default class FullPlayer extends PlayerController {
 		this.AUDIO = ChapterInfo.AUDIO;
 		this.IMAGE = ChapterInfo.IMAGE;
 		this.TITLE = ChapterInfo.TITLE;
+		this.AUTHOR = ChapterInfo.AUTHOR;
 
 		// Create bindings for the functions used in player
 		this.setCurrentTime = this.setCurrentTime.bind(this);
@@ -56,6 +59,9 @@ export default class FullPlayer extends PlayerController {
 		this.onSeek = this.onSeek.bind(this); 
 		this.onBack = this.onBack.bind(this); 
 		this.onForward = this.onForward.bind(this); 
+
+		// Global chapter controller object for chapter info
+		this.chapterController = new ChapterController();
 
 		// TODO May want to remove this
 		this.state = {
@@ -78,33 +84,6 @@ export default class FullPlayer extends PlayerController {
 
 		// Build the URL based on the ISBN, SEARCH_ID and ORDER_ID from the Book object
 		this.fetchJSONAsync(this.audioUrl);
-	}
-
-	// Check that the chapter list and elements exist
-	checkChapterList = (chapterList: Chapter[], chapterIndex: number):boolean => {
-		return (chapterList.length != 0) && (chapterList[chapterIndex] != undefined);
-	}
-
-	// Load the chpater info using the specified ChapterInfo enum and chapter list crap
-	loadChapter = (chapterInfo: ChapterInfo, chapterList: Chapter[], chapterIndex: number) => {
-		let dataString = "";
-		if (this.checkChapterList(chapterList, chapterIndex)) {
-			switch (chapterInfo) {
-				case (this.AUDIO): {
-					dataString = chapterList[chapterIndex].AUDIO_LOC ? chapterList[chapterIndex].AUDIO_LOC : "";
-					break;
-				}
-				case (this.IMAGE): {
-					dataString = chapterList[chapterIndex].PHOTO_LOC ? chapterList[chapterIndex].PHOTO_LOC : "";
-					break;
-				}
-				case (this.TITLE): {
-					dataString = chapterList[chapterIndex].TITLE ? chapterList[chapterIndex].TITLE : "";
-					break;
-				}
-			}
-		}
-		return dataString;
 	}
 
 	// Fetch the purhchased book using the url provided in the Library component
@@ -242,16 +221,19 @@ export default class FullPlayer extends PlayerController {
   	render() {
 
 		console.log("Render FULL PLAYER!");
-
+		
+		// TODO Need a better way of checking the chapters and the book objects rather
+		// than doing a check for each component run a check once and just update what we need
+			
 		return (
 		<Subscribe to={[PlayerControlContainer]}>
 		{(
-			{state: {isLoading, chapterList, rate, 
+			{state: {isLoaded, audioBook, chapterList, rate, 
 				currentPosition, chapterDuration, paused, chapterIndex}}
 		) => (
 			<SafeAreaView style={styles.container}>
 				<Video
-					source={{uri: this.loadChapter(this.AUDIO, chapterList, chapterIndex), type: "m3u8"}} // Can be a URL or a local file.
+					source={{uri: this.chapterController.loadChapterInfo(this.AUDIO, chapterList, chapterIndex), type: "m3u8"}} // Can be a URL or a local file.
 					ref={audioPlayer => (this.audioPlayer = audioPlayer)}
 					playInBackground={true}	
 					playWhenInactive={true}	
@@ -267,8 +249,8 @@ export default class FullPlayer extends PlayerController {
 					fullscreen={false}
 				/>
 				<StatusBar hidden={true} />
-				<AlbumArt url={this.loadChapter(this.IMAGE, chapterList, chapterIndex)} />
-				<ChapterDetails title={this.loadChapter(this.TITLE, chapterList, chapterIndex)} /> 
+				<AlbumArt url={this.chapterController.loadChapterInfo(this.IMAGE, chapterList, chapterIndex)} />
+				<ChapterDetails title={this.chapterController.loadChapterInfo(this.TITLE, chapterList, chapterIndex)} /> 
 				<SeekBar
 					chapterDuration={chapterDuration}
 					currentPosition={currentPosition}
@@ -289,6 +271,18 @@ export default class FullPlayer extends PlayerController {
 					</View>
 				</TouchableOpacity>
 				</View>
+				{
+					isLoaded ? 
+					<PlayerControls
+						title={this.chapterController.loadChapterInfo(this.TITLE, chapterList, chapterIndex)}
+						author={this.chapterController.loadBookInfo(this.AUTHOR, audioBook)}
+						image={this.chapterController.loadChapterInfo(this.IMAGE, chapterList, chapterIndex)}
+						onPressPlay={this.onPlay}
+						onPressPause={this.onPause}
+						paused={paused}	
+					/> : 
+					<View/>
+				}	
 			</SafeAreaView>
 		)}
 		</Subscribe>
