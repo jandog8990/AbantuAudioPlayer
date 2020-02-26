@@ -97,7 +97,6 @@ export default class PlayerController extends Component<PlayerControllerProps, a
 	}
 		
 	setControlNowPlaying = (audioBook: Book, chapter: Chapter) => {
-		console.log("Control Now Playing!");	
 		this.enableMusicControl();	
 			// rating: 0 
 		MusicControl.setNowPlaying({
@@ -111,7 +110,6 @@ export default class PlayerController extends Component<PlayerControllerProps, a
 
 		// const elapsedTime = this.props.playerControlContainer.state.currentPosition;
 		const elapsedTime = this.props.playerControlContainer.state.currentTime;	
-		console.log("elapsed time = " + elapsedTime);	
 		// MusicControl.setPlayback({
 			// maxVolume: 10,
 			// rating: MusicControl.RATING_HEART 

@@ -16,9 +16,7 @@ import {
 	Dimensions,
 	TouchableOpacity
 } from 'react-native';
-
-// import ChapterListModal from './src/screens/AudioPlayer/ChapterListModal';
-// import FullPlayer from './src/screens/AudioPlayer/FullPlayer';
+import {enableScreens} from 'react-native-screens';
 
 // import the Unstated module for state management and component connection
 import { Subscribe, Provider } from 'unstated';
@@ -29,8 +27,9 @@ import PlayerControlContainer from './src/containers/PlayerControlContainer';
 import { AudioBookProps } from './src/interfaces/props/AudioBookProps';
 import { StackNavProps } from './src/interfaces/props/StackNavProps';
 import FullPlayer from './src/screens/AudioPlayer/FullPlayer';
-import {enableScreens} from 'react-native-screens';
+// import ChapterListModal from './src/screens/AudioPlayer/ChapterListModal';
 
+// Needed to fix the Android screen render exceptions
 enableScreens();
 
 // Create instances of the LibraryContainer and PlayerControlContainer to be injected
@@ -107,7 +106,7 @@ export class StackNav extends Component<AudioBookProps, any> {
 					/>	
 			}),
 		},
-    FullPlayer: {
+    	FullPlayer: {
 			screen: (props: StackNavProps) => (
 				<FullPlayer
 					{...props} 
@@ -147,7 +146,7 @@ export class StackNav extends Component<AudioBookProps, any> {
 						</TouchableOpacity>,
 				};
 			}
-    },
+    	},
 	}, {
 		initialRouteParams: Home,
 		// Header config from home screen
@@ -163,8 +162,25 @@ export class StackNav extends Component<AudioBookProps, any> {
 		},
 	});
 
+	// Create the modal stack navigator to handle things like the chapter list
+	/*
+	RootStack = createStackNavigator({
+		MainApp: {
+			screen: this.MainStack,
+		},
+		ChapterList: {
+			screen: ChapterListModal
+		},
+	}, {
+		headerMode: 'none',
+		mode: 'modal'
+	});
+	*/
+
 	// Create the AppContainer from the main stack navigation
 	AppContainer = createAppContainer(this.MainStack);
+	// AppContainer = createAppContainer(this.RootStack);
+
 	
 	// Render the root stack navigator with the containers as props
 	render() {

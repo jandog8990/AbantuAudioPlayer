@@ -30,6 +30,7 @@ import { apiConfig } from '../../config/config';
 import { AudioBookResponse } from 'src/interfaces/network/AudioBookResponse';
 import { ChapterInfo } from '../../enums/ChapterInfo';
 import PlayerControls from '../../screens/AudioPlayer/PlayerControls';
+import ChapterListModal from '../../screens/AudioPlayer/ChapterListModal';
 
 import PlayerControlContainer from '../../containers/PlayerControlContainer';
 import { NavigationActions } from 'react-navigation';
@@ -65,12 +66,20 @@ export default class FullPlayer extends PlayerController {
 
 		// TODO May want to remove this
 		this.state = {
-			rerender: false
+			chapterListVisible: false,
 		};
 	}
 
-	// Audio URL
+	// Audio URL (TODO: This will be replaced by a full API on our React Native side)
 	audioUrl: string = apiConfig.baseUrl + apiConfig.bookPlayer + apiConfig.isbn + "/" + apiConfig.titleId + "/" + apiConfig.orderId;
+
+	// Modal operations for the ChapterList
+	openChapterList() {
+		this.setState({ chapterListVisible: true });
+	}
+	closeChapterList() {
+		this.setState({ chapterListVisible: false });
+	}
 
 	// Component mounted => query the database for the audiobook
 	// TODO: The url and book info should be retrieved from the navigation props from previous page
@@ -219,12 +228,12 @@ export default class FullPlayer extends PlayerController {
 	*/
 
   	render() {
-
-		console.log("Render FULL PLAYER!");
 		
 		// TODO Need a better way of checking the chapters and the book objects rather
 		// than doing a check for each component run a check once and just update what we need
 			
+		// <TouchableOpacity onPress={() => this.props.navigation.navigate('ChapterList')}>
+
 		return (
 		<Subscribe to={[PlayerControlContainer]}>
 		{(
@@ -232,6 +241,7 @@ export default class FullPlayer extends PlayerController {
 				currentPosition, chapterDuration, paused, chapterIndex}}
 		) => (
 			<SafeAreaView style={styles.container}>
+				<ChapterListModal/>
 				<Video
 					source={{uri: this.chapterController.loadChapterInfo(this.AUDIO, chapterList, chapterIndex), type: "m3u8"}} // Can be a URL or a local file.
 					ref={audioPlayer => (this.audioPlayer = audioPlayer)}
@@ -264,7 +274,7 @@ export default class FullPlayer extends PlayerController {
 					onForward={this.onForward}
 					paused={paused}/>
 				<View>
-				<TouchableOpacity> 
+				<TouchableOpacity onPress={() => this.openChapterList()}>
 					<View style={styles.chapterButton}> 
 					<Image source={require('../../../img/2x/baseline_format_list_bulleted_black_36dp.png')} style={styles.buttons} />
 					<Text style={styles.chapters}>Chapters</Text>	
