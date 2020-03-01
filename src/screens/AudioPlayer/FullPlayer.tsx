@@ -258,6 +258,8 @@ export default class FullPlayer extends PlayerController {
 				currentPosition, chapterDuration, paused, chapterIndex, chapterListVisible}}
 		) => (
 			<SafeAreaView style={styles.container}>
+				{
+				this.state.isListVisible ?
 				<ChapterListModal
 					closeChapterList={this.closeChapterList}
 					onSelectChapter={this.onSelectChapter}
@@ -265,6 +267,9 @@ export default class FullPlayer extends PlayerController {
 					chapterList={chapterList}
 					chapterIndex={chapterIndex}
 				/>
+				:
+				<View/>
+	  			}
 				<Video
 					source={{uri: this.chapterController.loadChapterInfo(this.AUDIO, chapterList, chapterIndex), type: "m3u8"}} // Can be a URL or a local file.
 					ref={audioPlayer => (this.audioPlayer = audioPlayer)}

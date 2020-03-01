@@ -62,7 +62,7 @@ export default class ChapterListModal extends React.Component<ChapterProps, Chap
 
 	shouldComponentUpdate = (nextProps, nextState) => {
 		const render = this.props.showChapters != nextProps.showChapters;
-		return nextProps.showChapters && render;
+		return nextProps.showChapters;
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
