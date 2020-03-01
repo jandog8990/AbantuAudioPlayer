@@ -37,7 +37,6 @@ interface ChapterProps {
 // Chapter state for local state
 interface ChapterState {
 	top: Animated.Value,
-	isOpen: boolean,
 	selected: Map<number, boolean>
 }
 
@@ -57,25 +56,19 @@ export default class ChapterListModal extends React.Component<ChapterProps, Chap
 
 		this.state = {
 			top: new Animated.Value(screenHeight),
-			isOpen: false,
 			selected: new Map<number, boolean>()
 		}
-
-		// this.setSelected();
 	}
 
 	shouldComponentUpdate = (nextProps, nextState) => {
 		const render = this.props.showChapters != nextProps.showChapters;
-		console.log("Next props = " + nextProps.showChapters);
-		console.log("This props = " + this.props.showChapters);
-		console.log("Should Render = " + render);
-		console.log("\n");
-
-		return nextProps.showChapters;
+		return nextProps.showChapters && render;
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-		this.openModal();
+		// if (!this.state.isOpen) {
+			this.openModal();
+		// }
 	}
 
 	// Open the modal for chapter list
@@ -83,13 +76,14 @@ export default class ChapterListModal extends React.Component<ChapterProps, Chap
 		Animated.spring(this.state.top, {
 			toValue: screenHeight/10,
 			// bounciness: 4,
-			velocity: 50,
-			tension: 20,
-			friction: 20,
+			// velocity: 50,
+			// tension: 20,
+			// friction: 20,
 			restSpeedThreshold: 300,
 			restDisplacementThreshold: 300,
 		}).start();
-		// }).start(() => this.setState({isOpen: true}));
+		// this.setState({isOpen: true})
+
 		// }).start(() => {setIsOpen(true); console.log("isOpen!");});
 	}
 	
@@ -98,12 +92,14 @@ export default class ChapterListModal extends React.Component<ChapterProps, Chap
 		// setIsOpen(false);
 		Animated.spring(this.state.top, {
 			toValue: screenHeight,
-			velocity: 50,
-			tension: 20,
-			friction: 20,
+			// velocity: 50,
+			// tension: 20,
+			// friction: 20,
 			restSpeedThreshold: 300,
 			restDisplacementThreshold: 300,
-		}).start(() => {this.props.closeChapterList();});
+		}).start(() => {
+			this.props.closeChapterList();
+		});
 	}
 
 	setSelected = () => {
@@ -112,9 +108,6 @@ export default class ChapterListModal extends React.Component<ChapterProps, Chap
 		chapterList.forEach(chapter => {
 			selectedMap.set(chapter.CHAPTER, false);
 		});
-		console.log("Selected Map:");
-		console.log(selectedMap);
-		console.log("\n");
 		this.setState({ selected: selectedMap });
 	}
 
@@ -126,42 +119,23 @@ export default class ChapterListModal extends React.Component<ChapterProps, Chap
 	// const onSelect = React.useCallback(
 	onSelect = (id: number) => {
 		const selected = this.state.selected;
-		console.log("Selected:");
-		console.log(this.state.selected);
-		console.log("ID = " + id);
-		const newSelected = new Map(this.state.selected);
+		const newSelected = new Map(selected);
+		const chapterList = this.props.chapterList;
 
 		[...newSelected.keys()].forEach(key => {
 			newSelected.set(key, false);
 		});
+		// chapterList.forEach(obj => {
+		// 	newSelected.set(obj.CHAPTER, false);
+		// })
 
 		newSelected.set(id, !selected.get(id));
-		console.log("---------------------------");
-		console.log("New Selected Map:");
-		newSelected.forEach((val, key) => {
-			console.log(key + " : " + val);
-		});
-		console.log("---------------------------\n");
 
 		// Set the selected component and play the selected chapter
 		this.setState({ selected: newSelected });
 		// setSelected(newSelected);
 		// onSelectChapter(chapterIndex);
 	}
-
-	/*
-	if (showChapters && !isOpen) {
-		console.log("POST Open Modal!");
-		console.log("isOpen = " + isOpen);
-		// if (!isOpen) {
-			openModal();
-		// }
-		// chapterList.forEach(obj => {
-		// 	console.log(obj.CHAPTER + " : " + obj.TITLE);
-		// });
-		// console.log("\n");
-	}
-	*/
 
 	render() {
 		const chapterList = this.props.chapterList;
