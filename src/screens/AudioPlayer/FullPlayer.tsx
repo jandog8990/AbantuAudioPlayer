@@ -60,8 +60,10 @@ export default class FullPlayer extends PlayerController {
 		this.setDuration = this.setDuration.bind(this);
 		this.onSeek = this.onSeek.bind(this); 
 		this.onBack = this.onBack.bind(this); 
-		this.onForward = this.onForward.bind(this); 
-		// this.closeChapterList = this.closeChapterList.bind(this);
+		this.onForward = this.onForward.bind(this);
+		this.openChapterList = this.openChapterList.bind(this);
+		this.closeChapterList = this.closeChapterList.bind(this);
+		this.setIsOpen = this.setIsOpen.bind(this);
 
 		// Global chapter controller object for chapter info
 		this.chapterController = new ChapterController();
@@ -114,11 +116,19 @@ export default class FullPlayer extends PlayerController {
 	}
 
 	// Modal operations for the ChapterList
-	openChapterList = () => {
-		this.props.playerControlContainer.setChapterListVisible(true);
+	openChapterList() {
+		// this.props.playerControlContainer.setChapterListVisible(true);
+		console.log("Open Chapter List => showList == TRUE!");
+		this.setState({isListVisible: true});
 	}
-	closeChapterList = () => {
-		this.props.playerControlContainer.setChapterListVisible(false);
+	closeChapterList() {
+		// this.props.playerControlContainer.setChapterListVisible(false);
+		console.log("Closed Chapter List => showList == FALSE!");
+		this.setState({isListVisible: false});
+	}
+	setIsOpen = async(isOpen: boolean): Promise<boolean> => {
+		await this.setState({isOpen: isOpen});
+		return true;
 	}
 
 	// Forward disabled if the index equals the number of chapters (end of book)
@@ -155,7 +165,11 @@ export default class FullPlayer extends PlayerController {
 	}
 
 	// Handle error from the video
-	onError = (error) => console.log("Audio player error occurred: " + error);
+	onError = (error) => {
+		console.log("Audio player error occurred: ");
+		console.error(error);
+		console.log("\n");
+	}
 
 	// On seek method for ffw and rwd
 	onSeek = (time) => {
@@ -231,11 +245,11 @@ export default class FullPlayer extends PlayerController {
 	*/
 
   	render() {
-		
 		// TODO Need a better way of checking the chapters and the book objects rather
 		// than doing a check for each component run a check once and just update what we need
 			
 		// <TouchableOpacity onPress={() => this.props.navigation.navigate('ChapterList')}>
+		// isOpen={this.state.isOpen}
 
 		return (
 		<Subscribe to={[PlayerControlContainer]}>
@@ -247,7 +261,7 @@ export default class FullPlayer extends PlayerController {
 				<ChapterListModal
 					closeChapterList={this.closeChapterList}
 					onSelectChapter={this.onSelectChapter}
-					showChapters={chapterListVisible}
+					showChapters={this.state.isListVisible}
 					chapterList={chapterList}
 					chapterIndex={chapterIndex}
 				/>

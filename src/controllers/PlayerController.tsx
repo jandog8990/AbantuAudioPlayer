@@ -23,10 +23,19 @@ interface PlayerControllerProps extends AudioBookProps, StackNavProps {};
  * PlayeController handles all control functionality for the full player
  * as well as the embedded player -> sends state to the PlayerControlContainer
  */
-export default class PlayerController extends Component<PlayerControllerProps, any> {
+interface PlayerState {
+	isListVisible: boolean,
+	isOpen
+}
+export default class PlayerController extends Component<PlayerControllerProps, PlayerState> {
 
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			isListVisible: false,
+			isOpen: false
+		}
 	}
 
 	// Initialize MusicControl module
