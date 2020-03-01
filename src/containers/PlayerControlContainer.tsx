@@ -1,12 +1,13 @@
 import {Container} from 'unstated';
-import { Book, initializeBook } from '../interfaces/models/Book';
-import { Chapter } from 'src/interfaces/models/Chapter';
+import { Book, initializeBook } from '../models/Book';
+import { Chapter } from 'src/models/Chapter';
 
 // Player control states for interacting with player
 // TODO: CurrentTime may not be used in the player
 interface PlayerControlState {
 	audioBook: Book,
-	chapterList: Chapter[], 
+    chapterList: Chapter[],
+    chapterListVisible: boolean,
     rate: number,
     paused: boolean,
     ended: boolean,
@@ -27,7 +28,8 @@ interface PlayerControlState {
 export default class PlayerControlContainer extends Container<PlayerControlState> {
     state: PlayerControlState = {
 		audioBook: initializeBook(),
-		chapterList: [], 
+        chapterList: [], 
+        chapterListVisible: false,
 		rate: 1, 
         paused: true,
         ended: false,
@@ -137,6 +139,8 @@ export default class PlayerControlContainer extends Container<PlayerControlState
 		console.log(this.state.chapterList);
 		console.log("\n");
     }
+
+    //
     
     // Set the rate of the full player component
 	setRate = (rate) => {
@@ -156,5 +160,9 @@ export default class PlayerControlContainer extends Container<PlayerControlState
 	// Set the total length of the chapter 
 	setTotalLength = (totalLength) => {
 		this.setState({ totalLength: totalLength });
-	}
+    }
+    
+    setChapterListVisible = (visible) => {
+        this.setState({ chapterListVisible: visible });
+    }
 }

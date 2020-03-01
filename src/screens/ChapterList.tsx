@@ -31,7 +31,7 @@ function Item({ id, title, selected, onSelect }) {
         console.log("Selected = " + selected);
         console.log("----------------------\n");
         onSelect(id);
-        }}
+      }}
       style={[
         styles.item,
         { backgroundColor: selected ? '#6e3b6e' : '#f9c2ff' },

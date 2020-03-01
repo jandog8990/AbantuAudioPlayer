@@ -1,5 +1,5 @@
 import { Container } from 'unstated'
-import { Book } from '../interfaces/models/Book';
+import { Book } from '../models/Book';
 
 interface LibraryState {
 	bookList: Book[],

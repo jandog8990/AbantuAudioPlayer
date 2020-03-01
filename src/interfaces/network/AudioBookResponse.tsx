@@ -1,4 +1,4 @@
-import { AudioBook } from "../models/AudioBook";
+import { AudioBook } from "../../models/AudioBook";
 
 /**
  * Audio book response interface for the book player endpoint

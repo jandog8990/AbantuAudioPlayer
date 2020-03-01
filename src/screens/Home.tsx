@@ -39,8 +39,8 @@ import {
 import { AudioBookProps } from '../interfaces/props/AudioBookProps';
 import { StackNavProps } from '../interfaces/props/StackNavProps';
 import { GenreResponse } from 'src/interfaces/network/GenreResponse';
-import { Genre } from 'src/interfaces/models/Genre';
-import { Book } from 'src/interfaces/models/Book';
+import { Genre } from 'src/models/Genre';
+import { Book } from 'src/models/Book';
 import { apiConfig } from '../config/config';
 
 // Combine the audio book and navigation props

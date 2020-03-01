@@ -1,5 +1,5 @@
-import { Chapter } from '../interfaces/models/Chapter';
-import { Book } from '../interfaces/models/Book';
+import { Chapter } from '../models/Chapter';
+import { Book } from '../models/Book';
 import { ChapterInfo } from '../enums/ChapterInfo';
 
 /**

@@ -25,7 +25,7 @@ const Controls = ({
   onPressPause,
   onBack,
   onForward,
-  paused
+  paused,
 }) => (
   <View style={styles.container}>
     <TouchableOpacity onPress={onBack}> 

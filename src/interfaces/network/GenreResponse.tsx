@@ -1,4 +1,4 @@
-import { Genre } from "../models/Genre";
+import { Genre } from "../../models/Genre";
 
 /**
  * Genre response interface and corresponding Genre data interface

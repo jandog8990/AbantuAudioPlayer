@@ -1,5 +1,5 @@
-import { Book } from "../models/Book";
-import { Chapter } from "../models/Chapter";
+import { Book } from "./Book";
+import { Chapter } from "./Chapter";
 
 /**
  * Audio book model containing the Book and Chapter list objects

@@ -8,8 +8,8 @@ import { AudioBookProps } from '../interfaces/props/AudioBookProps';
 import { StackNavProps } from '../interfaces/props/StackNavProps';
 
 // Import data objects or Types for the Book and Chapter models
-import { Chapter, initializeChapter } from '../interfaces/models/Chapter';
-import { Book, initializeBook } from '../interfaces/models/Book';
+import { Chapter, initializeChapter } from '../models/Chapter';
+import { Book, initializeBook } from '../models/Book';
 
 import ChapterDetails from 'src/screens/AudioPlayer/ChapterDetails';
 import PlayerControlContainer from 'src/containers/PlayerControlContainer';
@@ -164,13 +164,11 @@ export default class PlayerController extends Component<PlayerControllerProps, a
 			// Set the MusicControl module to now playing with playback 
 			this.setControlNowPlaying(audioBook, chapter);
 		}	
-    }
-
-    // Play the previous chapter in the chapters list
-    playPreviousChapter = () => {
-		const { chapterIndex } = this.props.playerControlContainer.state;
-		const newIndex = chapterIndex - 1;
-		
+	}
+	
+	// Play the selected chapter in the chapters list
+	// This can be previous, next and select actions from the list
+	playSelectedChapter = (chapterIndex: number) => {
 		// First let the user know the chapter is changing
 		this.props.playerControlContainer.setChanging(true);
 
@@ -179,25 +177,24 @@ export default class PlayerController extends Component<PlayerControllerProps, a
 		// Update the states using local methods
 		this.props.playerControlContainer.setCurrentPosition(0);
 		this.props.playerControlContainer.setChanging(false);
-		this.props.playerControlContainer.setCurrentChapter(newIndex < 0 ? 0 : newIndex);
+		this.props.playerControlContainer.setCurrentChapter(chapterIndex);
+
+		// Play the current chapter using state vars
 		this.playCurrentChapter();
+	}
+
+    // Play the previous chapter in the chapters list
+    playPreviousChapter = () => {
+		const { chapterIndex } = this.props.playerControlContainer.state;
+		const newIndex = chapterIndex - 1;
+		this.playSelectedChapter(newIndex < 0 ? 0 : newIndex);
     }
 
     // Play the next chapter in the chapters lis                                                                                                                                                                                                          fff                                                         cxt
     playNextChapter = () => {
 		// Get the state from the player control container
 		const { chapterList, chapterIndex } = this.props.playerControlContainer.state;
-
-		// let the user know the chapter is changing
-		this.props.playerControlContainer.setChanging(true);
-
-		// TODO: Does this implement MusicControl??
-
-		// Update the states using local methods
-		this.props.playerControlContainer.setCurrentPosition(0);
-		this.props.playerControlContainer.setChanging(false);
-		this.props.playerControlContainer.setCurrentChapter((chapterIndex+1) % (chapterList.length));
-		this.playCurrentChapter();
+		this.playSelectedChapter((chapterIndex+1) % (chapterList.length));
     }
 
     // Pause the current chapter

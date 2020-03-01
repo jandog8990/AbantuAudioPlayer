@@ -35,6 +35,7 @@ import ChapterListModal from '../../screens/AudioPlayer/ChapterListModal';
 import PlayerControlContainer from '../../containers/PlayerControlContainer';
 import { NavigationActions } from 'react-navigation';
 import { Subscribe } from 'unstated';
+import LibraryContainer from 'src/containers/LibraryContainer';
 
 export default class FullPlayer extends PlayerController {
 
@@ -60,26 +61,14 @@ export default class FullPlayer extends PlayerController {
 		this.onSeek = this.onSeek.bind(this); 
 		this.onBack = this.onBack.bind(this); 
 		this.onForward = this.onForward.bind(this); 
+		// this.closeChapterList = this.closeChapterList.bind(this);
 
 		// Global chapter controller object for chapter info
 		this.chapterController = new ChapterController();
-
-		// TODO May want to remove this
-		this.state = {
-			chapterListVisible: false,
-		};
 	}
 
 	// Audio URL (TODO: This will be replaced by a full API on our React Native side)
 	audioUrl: string = apiConfig.baseUrl + apiConfig.bookPlayer + apiConfig.isbn + "/" + apiConfig.titleId + "/" + apiConfig.orderId;
-
-	// Modal operations for the ChapterList
-	openChapterList() {
-		this.setState({ chapterListVisible: true });
-	}
-	closeChapterList() {
-		this.setState({ chapterListVisible: false });
-	}
 
 	// Component mounted => query the database for the audiobook
 	// TODO: The url and book info should be retrieved from the navigation props from previous page
@@ -114,6 +103,7 @@ export default class FullPlayer extends PlayerController {
 				var audio = chapterList[i].AUDIO_LOC;
 				var encode = audio.replace(/ /g, "%20");
 				chapterList[i].AUDIO_LOC = encode;
+
 			}
 
 			// Audiobook needs to be filtered out into Book and Chapter[]
@@ -121,6 +111,14 @@ export default class FullPlayer extends PlayerController {
 		} catch(err) {
 			console.error(err);
 		}
+	}
+
+	// Modal operations for the ChapterList
+	openChapterList = () => {
+		this.props.playerControlContainer.setChapterListVisible(true);
+	}
+	closeChapterList = () => {
+		this.props.playerControlContainer.setChapterListVisible(false);
 	}
 
 	// Forward disabled if the index equals the number of chapters (end of book)
@@ -200,6 +198,11 @@ export default class FullPlayer extends PlayerController {
 		this.playNextChapter();
 	}
 
+	// On select chapter is used by the ChapterListItem
+	onSelectChapter = (index: number) => {
+		this.playSelectedChapter(index);
+	}
+
 	/**
 	 * Update methods for updating the current state of the player
 	 */
@@ -238,10 +241,16 @@ export default class FullPlayer extends PlayerController {
 		<Subscribe to={[PlayerControlContainer]}>
 		{(
 			{state: {isLoaded, audioBook, chapterList, rate, 
-				currentPosition, chapterDuration, paused, chapterIndex}}
+				currentPosition, chapterDuration, paused, chapterIndex, chapterListVisible}}
 		) => (
 			<SafeAreaView style={styles.container}>
-				<ChapterListModal/>
+				<ChapterListModal
+					closeChapterList={this.closeChapterList}
+					onSelectChapter={this.onSelectChapter}
+					showChapters={chapterListVisible}
+					chapterList={chapterList}
+					chapterIndex={chapterIndex}
+				/>
 				<Video
 					source={{uri: this.chapterController.loadChapterInfo(this.AUDIO, chapterList, chapterIndex), type: "m3u8"}} // Can be a URL or a local file.
 					ref={audioPlayer => (this.audioPlayer = audioPlayer)}
