@@ -21,6 +21,7 @@ import ChapterDetails from './ChapterDetails';
 import SeekBar from './SeekBar';
 import Controls from './Controls';
 import Video from 'react-native-video';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 import PlayerController from '../../controllers/PlayerController';
 import ChapterController from '../../controllers/ChapterController';
@@ -30,7 +31,6 @@ import { apiConfig } from '../../config/config';
 import { AudioBookResponse } from 'src/interfaces/network/AudioBookResponse';
 import { ChapterInfo } from '../../enums/ChapterInfo';
 import PlayerControls from '../../screens/AudioPlayer/PlayerControls';
-import ChapterListModal from '../../screens/AudioPlayer/ChapterListModal';
 
 import PlayerControlContainer from '../../containers/PlayerControlContainer';
 import { NavigationActions } from 'react-navigation';
@@ -61,9 +61,12 @@ export default class FullPlayer extends PlayerController {
 		this.onSeek = this.onSeek.bind(this); 
 		this.onBack = this.onBack.bind(this); 
 		this.onForward = this.onForward.bind(this);
+
+		/*
 		this.openChapterList = this.openChapterList.bind(this);
 		this.closeChapterList = this.closeChapterList.bind(this);
 		this.setIsOpen = this.setIsOpen.bind(this);
+		*/
 
 		// Global chapter controller object for chapter info
 		this.chapterController = new ChapterController();
@@ -116,6 +119,7 @@ export default class FullPlayer extends PlayerController {
 	}
 
 	// Modal operations for the ChapterList
+	/*	
 	openChapterList() {
 		// this.props.playerControlContainer.setChapterListVisible(true);
 		console.log("Open Chapter List => showList == TRUE!");
@@ -130,6 +134,7 @@ export default class FullPlayer extends PlayerController {
 		await this.setState({isOpen: isOpen});
 		return true;
 	}
+	*/
 
 	// Forward disabled if the index equals the number of chapters (end of book)
 	onForwardDisabled = (data) => {
@@ -244,6 +249,15 @@ export default class FullPlayer extends PlayerController {
 	*		ignoreSilentSwitch="ignore"	
 	*/
 
+	/*
+	<ChapterListModal
+		closeChapterList={this.closeChapterList}
+		onSelectChapter={this.onSelectChapter}
+		chapterList={chapterList}
+		chapterIndex={chapterIndex}
+	/>
+	*/
+
   	render() {
 		// TODO Need a better way of checking the chapters and the book objects rather
 		// than doing a check for each component run a check once and just update what we need
@@ -258,18 +272,6 @@ export default class FullPlayer extends PlayerController {
 				currentPosition, chapterDuration, paused, chapterIndex, chapterListVisible}}
 		) => (
 			<SafeAreaView style={styles.container}>
-				{
-				this.state.isListVisible ?
-				<ChapterListModal
-					closeChapterList={this.closeChapterList}
-					onSelectChapter={this.onSelectChapter}
-					showChapters={this.state.isListVisible}
-					chapterList={chapterList}
-					chapterIndex={chapterIndex}
-				/>
-				:
-				<View/>
-	  			}
 				<Video
 					source={{uri: this.chapterController.loadChapterInfo(this.AUDIO, chapterList, chapterIndex), type: "m3u8"}} // Can be a URL or a local file.
 					ref={audioPlayer => (this.audioPlayer = audioPlayer)}
@@ -302,7 +304,9 @@ export default class FullPlayer extends PlayerController {
 					onForward={this.onForward}
 					paused={paused}/>
 				<View>
-				<TouchableOpacity onPress={() => this.openChapterList()}>
+				<TouchableOpacity onPress={() => {
+					this.props.navigation.navigate('ChapterList',{
+						chapterList: chapterList, chapterIndex: chapterIndex})}}>
 					<View style={styles.chapterButton}> 
 					<Image source={require('../../../img/2x/baseline_format_list_bulleted_black_36dp.png')} style={styles.buttons} />
 					<Text style={styles.chapters}>Chapters</Text>	
@@ -332,7 +336,7 @@ export default class FullPlayer extends PlayerController {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-	backgroundColor: 'white',
+	backgroundColor: Colors.lighter
   },
   chapters: {
     fontSize: 12,

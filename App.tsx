@@ -17,11 +17,13 @@ import {
 	TouchableOpacity
 } from 'react-native';
 import {enableScreens} from 'react-native-screens';
+import styled from "styled-components";
 
 // import the Unstated module for state management and component connection
 import { Subscribe, Provider } from 'unstated';
 import LibraryContainer from './src/containers/LibraryContainer';
 import PlayerControlContainer from './src/containers/PlayerControlContainer';
+import ChapterListModal from './src/screens/AudioPlayer/ChapterListModal';
 
 // Props import for the audiobook and stack navigation
 import { AudioBookProps } from './src/interfaces/props/AudioBookProps';
@@ -164,22 +166,57 @@ export class StackNav extends Component<AudioBookProps, any> {
 
 	// Create the modal stack navigator to handle things like the chapter list
 	/*
+	screen: (props: StackNavProps) => (
+		<FullPlayer
+			{...props} 
+			libraryContainer={this.props.libraryContainer}
+			playerControlContainer={this.props.playerControlContainer}
+		/>
+	),
+						<CloseView style={{ elevation: 10 }}>
+						</CloseView>
+	*/
 	RootStack = createStackNavigator({
 		MainApp: {
 			screen: this.MainStack,
+			navigationOptions: { headerShown: false } 
 		},
 		ChapterList: {
-			screen: ChapterListModal
-		},
+			screen: (props: StackNavProps) => (
+				<ChapterListModal
+					{...props}
+					playerControlContainer={this.props.playerControlContainer}
+				/>
+			),
+			navigationOptions: ({ navigation }) => {
+				return {
+					title: 'Chapters',
+					gesturesEnabled: false,	
+					headerBackTitleVisible: false,	
+					headerTitleStyle: { color: 'black', fontSize: 14, width : Dimensions.get('window').width/1.6, textAlign: 'center'},	
+					headerStyle: { backgroundColor: 'white' },
+					headerTintColor: 'black',
+					headerLeft: () =>
+						<TouchableOpacity onPress={() => navigation.goBack()}>	
+							<Icon
+								containerStyle={{paddingLeft:30, paddingTop: 5}}
+								color='black'	
+								size={40}	
+								type="ionicon"
+								name={Platform.OS === "ios" ? "ios-close" : "md-close"}
+							/>
+						</TouchableOpacity>
+				};
+			}
+		}
 	}, {
-		headerMode: 'none',
+		// headerMode: 'none',	
 		mode: 'modal'
 	});
-	*/
 
 	// Create the AppContainer from the main stack navigation
-	AppContainer = createAppContainer(this.MainStack);
-	// AppContainer = createAppContainer(this.RootStack);
+	// AppContainer = createAppContainer(this.MainStack);
+	AppContainer = createAppContainer(this.RootStack);
 
 	
 	// Render the root stack navigator with the containers as props
@@ -187,3 +224,23 @@ export class StackNav extends Component<AudioBookProps, any> {
 		return <this.AppContainer /> 
 	}
 }	// End of StackNav
+
+// Create the styled view for the AnimatedContainer
+const Container = styled.View`
+	position: absolute;
+	background: white;
+	width: 100%;
+	height: 100%;
+	z-index: 100;
+`
+
+// Create the close view to remove the chapter list
+const CloseView = styled.View`
+	width: 44px;
+	height: 44px;
+	border-radius: 22px;
+	background: white;
+	justify-content: center;
+	align-items: center;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+`

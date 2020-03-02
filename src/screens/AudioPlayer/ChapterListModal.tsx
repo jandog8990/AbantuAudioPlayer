@@ -16,9 +16,14 @@ import {
 import { Icon } from 'react-native-elements';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import styled from "styled-components";
-import LibraryContainer from 'src/containers/LibraryContainer';
+
 import { Chapter } from 'src/models/Chapter';
 import ChapterListItem from './ChapterListItem';
+
+import LibraryContainer from 'src/containers/LibraryContainer';
+import PlayerControlContainer from '../../containers/PlayerControlContainer';
+import { StackNavProps } from '../../interfaces/props/StackNavProps';
+import { AudioBookProps } from 'src/interfaces/props/AudioBookProps';
 
 // Screen height for the current app
 const screenHeight = Dimensions.get("window").height;
@@ -26,13 +31,14 @@ const screenHeight = Dimensions.get("window").height;
 // closeChapterList(): any
 
 // Chapter props from the parent screen
+/*
 interface ChapterProps {
 	closeChapterList: (() => void),
 	onSelectChapter: ((index:number) => void),
-	showChapters: boolean,
-	chapterList: Chapter[],
-	chapterIndex: number
 }
+*/
+
+interface ChapterProps extends AudioBookProps, StackNavProps {};
 
 // Chapter state for local state
 interface ChapterState {
@@ -60,51 +66,9 @@ export default class ChapterListModal extends React.Component<ChapterProps, Chap
 		}
 	}
 
-	shouldComponentUpdate = (nextProps, nextState) => {
-		const render = this.props.showChapters != nextProps.showChapters;
-		return nextProps.showChapters;
-	}
-
-	componentDidUpdate = (prevProps, prevState) => {
-		// if (!this.state.isOpen) {
-			this.openModal();
-		// }
-	}
-
-	// Open the modal for chapter list
-	openModal = () => {
-		Animated.spring(this.state.top, {
-			toValue: screenHeight/10,
-			// bounciness: 4,
-			// velocity: 50,
-			// tension: 20,
-			// friction: 20,
-			restSpeedThreshold: 300,
-			restDisplacementThreshold: 300,
-		}).start();
-		// this.setState({isOpen: true})
-
-		// }).start(() => {setIsOpen(true); console.log("isOpen!");});
-	}
-	
-	// Close the modal for the chapter list
-	closeModal = () => {
-		// setIsOpen(false);
-		Animated.spring(this.state.top, {
-			toValue: screenHeight,
-			// velocity: 50,
-			// tension: 20,
-			// friction: 20,
-			restSpeedThreshold: 300,
-			restDisplacementThreshold: 300,
-		}).start(() => {
-			this.props.closeChapterList();
-		});
-	}
-
 	setSelected = () => {
 		const selectedMap = new Map(this.state.selected);
-		const chapterList = this.props.chapterList;
+		const chapterList = this.props.navigation.state.params!.chapterList; 
 		chapterList.forEach(chapter => {
 			selectedMap.set(chapter.CHAPTER, false);
 		});
@@ -120,7 +84,7 @@ export default class ChapterListModal extends React.Component<ChapterProps, Chap
 	onSelect = (id: number) => {
 		const selected = this.state.selected;
 		const newSelected = new Map(selected);
-		const chapterList = this.props.chapterList;
+		const chapterList = this.props.navigation.state.params!.chapterList;
 
 		[...newSelected.keys()].forEach(key => {
 			newSelected.set(key, false);
@@ -136,24 +100,18 @@ export default class ChapterListModal extends React.Component<ChapterProps, Chap
 		// setSelected(newSelected);
 		// onSelectChapter(chapterIndex);
 	}
-
-	render() {
-		const chapterList = this.props.chapterList;
-		return (
+	/*	
 		<AnimatedContainer style={{top: this.state.top}}>
-			<TouchableOpacity
-				onPress={() => this.closeModal()}
-				style={{ position: "absolute", top: -20, left: "50%", marginLeft: -22, zIndex: 1 }}
-			>
-				<CloseView style={{ elevation: 10 }}>
-				<Icon
-					size={44}	
-					type="ionicon"
-					name={Platform.OS === "ios" ? "ios-close" : "md-close"}
-					color='purple'
-				/>
-				</CloseView>
-			</TouchableOpacity>
+			</AnimatedContainer>
+			style={{ position: "absolute", top: 20, left: "50%", marginLeft: -22, zIndex: 1 }}
+	*/	
+	render() {
+		// const chapterList = this.props.chapterList;
+		const chapterList: Chapter[] = this.props.navigation.state.params!.chapterList;	
+		console.log("Chapter List:");
+		console.log(chapterList);
+		console.log("\n");
+		return (
 			<SafeAreaView style={styles.listContainer}>
 				<FlatList
 					data={chapterList}
@@ -168,7 +126,6 @@ export default class ChapterListModal extends React.Component<ChapterProps, Chap
 					extraData={this.state.selected}
 				/>
 			</SafeAreaView>
-		</AnimatedContainer>
 		);	
 	}
 	// }
@@ -176,28 +133,6 @@ export default class ChapterListModal extends React.Component<ChapterProps, Chap
 }
 
 // export default ChapterListModal;
-
-// Create the styled view for the AnimatedContainer
-const Container = styled.View`
-	position: absolute;
-	background: white;
-	width: 100%;
-	height: 100%;
-	z-index: 100;
-`
-
-// Create the close view to remove the chapter list
-const CloseView = styled.View`
-	width: 44px;
-	height: 44px;
-	border-radius: 22px;
-	background: white;
-	justify-content: center;
-	align-items: center;
-	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
-`
-
-const AnimatedContainer = Animated.createAnimatedComponent(Container);
 
 
 const styles = StyleSheet.create({
