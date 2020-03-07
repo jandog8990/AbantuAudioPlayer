@@ -4,11 +4,11 @@
  * the OrderId and other temporary ISBN book info
  */
 export const apiConfig = {
-    "baseUrl": "https://a288bae7.ngrok.io",
+    "baseUrl": "http://32e6e72f.ngrok.io",
     "genres": "/android/genres/",
     "bookPlayer": "/android/books/player/",
     "purchasedBooks": "/android/purchased-books/",
-    "orderId": "5c81be173a162c491abb1cfd",
-    "isbn": "967714",
-    "titleId": "Outlaw"
+    "orderId": "5c9bb9ee319d3d71c7f5e3a8",
+    "isbn": "927614",
+    "titleId": "A-Matter-of-Pride-and-Other-Stories"
 };

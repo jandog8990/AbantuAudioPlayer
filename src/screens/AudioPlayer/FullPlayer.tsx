@@ -10,12 +10,9 @@ import {
   Image, 
   StatusBar,
   TouchableOpacity,
-  ActivityIndicator,
   SafeAreaView,
   StyleSheet
 } from 'react-native';
-import { Icon } from 'react-native-elements';
-import Header from './Header';
 import AlbumArt from './AlbumArt';
 import ChapterDetails from './ChapterDetails';
 import SeekBar from './SeekBar';
@@ -30,7 +27,7 @@ import ChapterController from '../../controllers/ChapterController';
 import { apiConfig } from '../../config/config';
 import { AudioBookResponse } from 'src/interfaces/network/AudioBookResponse';
 import { ChapterInfo } from '../../enums/ChapterInfo';
-import PlayerControls from '../../screens/AudioPlayer/PlayerControls';
+import EmbeddedPlayer from './EmbeddedPlayer';
 
 import PlayerControlContainer from '../../containers/PlayerControlContainer';
 import { NavigationActions } from 'react-navigation';
@@ -61,12 +58,6 @@ export default class FullPlayer extends PlayerController {
 		this.onSeek = this.onSeek.bind(this); 
 		this.onBack = this.onBack.bind(this); 
 		this.onForward = this.onForward.bind(this);
-
-		/*
-		this.openChapterList = this.openChapterList.bind(this);
-		this.closeChapterList = this.closeChapterList.bind(this);
-		this.setIsOpen = this.setIsOpen.bind(this);
-		*/
 
 		// Global chapter controller object for chapter info
 		this.chapterController = new ChapterController();
@@ -118,24 +109,6 @@ export default class FullPlayer extends PlayerController {
 		}
 	}
 
-	// Modal operations for the ChapterList
-	/*	
-	openChapterList() {
-		// this.props.playerControlContainer.setChapterListVisible(true);
-		console.log("Open Chapter List => showList == TRUE!");
-		this.setState({isListVisible: true});
-	}
-	closeChapterList() {
-		// this.props.playerControlContainer.setChapterListVisible(false);
-		console.log("Closed Chapter List => showList == FALSE!");
-		this.setState({isListVisible: false});
-	}
-	setIsOpen = async(isOpen: boolean): Promise<boolean> => {
-		await this.setState({isOpen: isOpen});
-		return true;
-	}
-	*/
-
 	// Forward disabled if the index equals the number of chapters (end of book)
 	onForwardDisabled = (data) => {
 		// does this return a boolean to disable the FWD button?
@@ -157,8 +130,6 @@ export default class FullPlayer extends PlayerController {
 		const { isLoading } = this.props.playerControlContainer.state;
 
 		if (!isLoading) {
-			// this.setState({currentTime: data.currentTime});
-
 			// This updates the time in the master player controls container
 			this.updatePlayTime(data.currentTime);
 		}
@@ -217,11 +188,6 @@ export default class FullPlayer extends PlayerController {
 		this.playNextChapter();
 	}
 
-	// On select chapter is used by the ChapterListItem
-	onSelectChapter = (index: number) => {
-		this.playSelectedChapter(index);
-	}
-
 	/**
 	 * Update methods for updating the current state of the player
 	 */
@@ -242,21 +208,6 @@ export default class FullPlayer extends PlayerController {
 		// Update the play time for the MusicControl
 		this.updatePlayTime(data.currentTime);
 	}
-		
-	/*
-	* Play the audio in the background requires:
-	* 		playInBackground=true	
-	*		ignoreSilentSwitch="ignore"	
-	*/
-
-	/*
-	<ChapterListModal
-		closeChapterList={this.closeChapterList}
-		onSelectChapter={this.onSelectChapter}
-		chapterList={chapterList}
-		chapterIndex={chapterIndex}
-	/>
-	*/
 
   	render() {
 		// TODO Need a better way of checking the chapters and the book objects rather
@@ -315,7 +266,7 @@ export default class FullPlayer extends PlayerController {
 				</View>
 				{
 					isLoaded ? 
-					<PlayerControls
+					<EmbeddedPlayer
 						title={this.chapterController.loadChapterInfo(this.TITLE, chapterList, chapterIndex)}
 						author={this.chapterController.loadBookInfo(this.AUTHOR, audioBook)}
 						image={this.chapterController.loadChapterInfo(this.IMAGE, chapterList, chapterIndex)}

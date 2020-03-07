@@ -30,7 +30,7 @@ export default class PlayerControlContainer extends Container<PlayerControlState
 		audioBook: initializeBook(),
         chapterList: [], 
         chapterListVisible: false,
-		rate: 1, 
+		rate: 1,
         paused: true,
         ended: false,
         totalLength: 0.0, 

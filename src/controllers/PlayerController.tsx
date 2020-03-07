@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
-	View
+	Animated,
+	Dimensions,
 } from 'react-native';
 
 // Custom objects and models from other TypeScript files
@@ -19,25 +20,54 @@ import { Command } from '../enums/Command';
 // Combine audio book and navigation props
 interface PlayerControllerProps extends AudioBookProps, StackNavProps {};
 
+
+// Screen height for the current app
+const screenHeight = Dimensions.get("window").height;
+
 /**
  * PlayeController handles all control functionality for the full player
  * as well as the embedded player -> sends state to the PlayerControlContainer
- */
-interface PlayerState {
 	isListVisible: boolean,
-	isOpen
+	isOpen: boolean,
+	top?: Animated.Value,
+ */
+ interface PlayerState {
+	selected?: Map<number, boolean> 
 }
+
 export default class PlayerController extends Component<PlayerControllerProps, PlayerState> {
 
 	constructor(props) {
 		super(props);
 
-		this.state = {
+		/*
 			isListVisible: false,
-			isOpen: false
+			isOpen: false,
+			top: new Animated.Value(screenHeight),
+		*/
+		
+		this.state = {
+			selected: new Map<number, boolean>()
 		}
+		
+		// this.setSelected();
 	}
 
+	// Initialize the selected map with booleans for each chapter
+	setSelected = () => {
+		console.log("Set Selected Map:");	
+		const selected = this.state.selected;
+		const selectedMap = new Map(selected!);
+		const chapterList = this.props.navigation.state.params!.chapterList; 
+		chapterList.forEach(chapter => {
+			selectedMap.set(chapter.CHAPTER, false);
+		});
+		console.log(selectedMap);
+		console.log("\n");
+
+		this.setState({ selected: selectedMap });
+	}
+	
 	// Initialize MusicControl module
 	initializeMusicControl = () => {
 		// Enable BG and audio interruptions	

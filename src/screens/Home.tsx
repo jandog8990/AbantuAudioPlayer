@@ -110,11 +110,12 @@ export default class Home extends Component<HomeProps, HomeState> {
 	  let server = this.server; 
 	  let url1 = server + this.route + 'history';
 	  let url2 = server + this.route + 'poetry';
-	  let url3 = server + this.route + 'fiction';
-	  let url4 = server + this.route + 'biography';
+	  let url3 = server + this.route + 'short-stories';
+	  let url4 = server + this.route + 'fiction';
+	  let url5 = server + this.route + 'biography';
 
 	  // create the url array 
-	  let urlArr = [url1, url2, url3, url4];
+	  let urlArr = [url1, url2, url3, url4, url5];
 	  console.log("Url Arr:");
 	  console.log(urlArr);
 	  console.log("\n");

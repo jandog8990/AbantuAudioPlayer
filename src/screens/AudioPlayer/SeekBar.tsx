@@ -14,18 +14,7 @@ import {
 } from 'react-native';
 
 import Slider from 'react-native-slider';
-
-// Padding for the physical position may need to be updated
-function pad(n, width, z=0) {
-  n = n + '';
-  return n.length >= width ? n : new Array(width - n.length + 1).join(String(z)) + n;
-}
-
-// TODO This conversion may not be working
-const minutesAndSeconds = (position) => ([
-  pad(Math.floor(position / 60), 2),
-  pad(position % 60, 2),
-]);
+import Timing from './utils/Timing';
 
 /**
  * SeekBar for the main full player allows fwd and rwd of audio
@@ -38,8 +27,9 @@ const minutesAndSeconds = (position) => ([
   onSeek,
   onSlidingStart,
 }) => {
-  const elapsed = minutesAndSeconds(currentPosition);
-  const remaining = minutesAndSeconds(chapterDuration - currentPosition);
+  const timing = new Timing(); 
+  const elapsed = timing.minutesAndSeconds(currentPosition);
+  const remaining = timing.minutesAndSeconds(chapterDuration - currentPosition);
   return (
     <View style={styles.container}>
       <View style={{flexDirection: 'row'}}>
