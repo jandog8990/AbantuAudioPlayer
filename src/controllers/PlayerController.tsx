@@ -27,45 +27,29 @@ const screenHeight = Dimensions.get("window").height;
 /**
  * PlayeController handles all control functionality for the full player
  * as well as the embedded player -> sends state to the PlayerControlContainer
-	isListVisible: boolean,
-	isOpen: boolean,
-	top?: Animated.Value,
  */
- interface PlayerState {
-	selected?: Map<number, boolean> 
-}
-
-export default class PlayerController extends Component<PlayerControllerProps, PlayerState> {
+export default class PlayerController extends Component<PlayerControllerProps, any> {
 
 	constructor(props) {
 		super(props);
-
-		/*
-			isListVisible: false,
-			isOpen: false,
-			top: new Animated.Value(screenHeight),
-		*/
-		
-		this.state = {
-			selected: new Map<number, boolean>()
-		}
-		
-		// this.setSelected();
 	}
 
 	// Initialize the selected map with booleans for each chapter
-	setSelected = () => {
+	initializeSelectedMap = () => {
 		console.log("Set Selected Map:");	
-		const selected = this.state.selected;
+		const selected = this.props.playerControlContainer.state.selected;	
+		// const selected = this.state.selected;
 		const selectedMap = new Map(selected!);
-		const chapterList = this.props.navigation.state.params!.chapterList; 
+		// const chapterList = this.props.navigation.state.params!.chapterList; 
+		const chapterList = this.props.playerControlContainer.state.chapterList;
 		chapterList.forEach(chapter => {
 			selectedMap.set(chapter.CHAPTER, false);
 		});
 		console.log(selectedMap);
 		console.log("\n");
 
-		this.setState({ selected: selectedMap });
+		// this.setState({ selected: selectedMap });
+		this.props.playerControlContainer.setSelected(selectedMap);	
 	}
 	
 	// Initialize MusicControl module
@@ -134,7 +118,8 @@ export default class PlayerController extends Component<PlayerControllerProps, P
 		// Never allow user to close notification on swipe
 		MusicControl.enableControl('closeNotification', true, {when: 'never'})
 	}
-		
+	
+	// Set the MusicControl to playing
 	setControlNowPlaying = (audioBook: Book, chapter: Chapter) => {
 		this.enableMusicControl();	
 			// rating: 0 
@@ -194,6 +179,9 @@ export default class PlayerController extends Component<PlayerControllerProps, P
 			console.log("Music Control SetNowPlaying!");	
 			console.log(chapter);
 			console.log("\n");	
+		
+			// Set the selected map to true for the current chapter
+			this.setSelected(chapterIndex);
 
 			// Set states for the current playing chapter
 			const paused = false;
@@ -221,6 +209,25 @@ export default class PlayerController extends Component<PlayerControllerProps, P
 		// Play the current chapter using state vars
 		this.playCurrentChapter();
 	}
+
+	// Selected map selection update
+	setSelected = (chapterIndex: number) => {
+		console.log("Set Selected = " + chapterIndex);	
+		const selected = this.props.playerControlContainer.state.selected;	
+		// const selected = this.state.selected;
+		console.log("state.selected = " + selected);	
+		
+		const newSelected = new Map(selected!);
+		// const chapterList = this.props.navigation.state.params!.chapterList;
+
+		[...newSelected.keys()].forEach(key => {
+			newSelected.set(key, false);
+		});
+
+		// set the selected item to true
+		newSelected.set(chapterIndex, !selected!.get(chapterIndex));
+		this.props.playerControlContainer.setSelected(newSelected);
+	} 
 
     // Play the previous chapter in the chapters list
     playPreviousChapter = () => {

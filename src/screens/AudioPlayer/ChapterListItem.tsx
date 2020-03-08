@@ -15,9 +15,6 @@ const ChapterListItem: React.FC<{chapter: Chapter,
     const { ISBN, TITLE, CHAPTER, DURATION } = chapter;
     const timing = new Timing();
     const duration = timing.minutesAndSeconds(DURATION);
-    console.log("Chapter List Itme:");
-    console.log("ISBN = " + ISBN);
-    console.log("\n");
     
     return (
         <TouchableOpacity

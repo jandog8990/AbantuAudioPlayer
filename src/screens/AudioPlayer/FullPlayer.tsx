@@ -103,7 +103,11 @@ export default class FullPlayer extends PlayerController {
 			}
 
 			// Audiobook needs to be filtered out into Book and Chapter[]
-			this.props.playerControlContainer.foundChapters(audioBook, chapterList);
+			await this.props.playerControlContainer.foundChapters(audioBook, chapterList);
+
+			// Load the book container books for viewing in the chapter list
+			console.log("Fetch JSon DONE => setSelected()!");	
+			// this.initializeSelectedMap();
 		} catch(err) {
 			console.error(err);
 		}

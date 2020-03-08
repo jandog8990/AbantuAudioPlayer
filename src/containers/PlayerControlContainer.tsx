@@ -18,7 +18,8 @@ interface PlayerControlState {
     chapterIndex: number,
     isLoading: boolean,
     isChanging: boolean,
-    isLoaded: boolean
+    isLoaded: boolean,
+    selected: Map<number, boolean>
 }
 
 /**
@@ -40,7 +41,8 @@ export default class PlayerControlContainer extends Container<PlayerControlState
         chapterIndex: 0,
         isLoading: true,
         isChanging: false,
-        isLoaded: false
+        isLoaded: false,
+        selected: new Map<number, boolean>()
     }
 
     /**
@@ -156,6 +158,11 @@ export default class PlayerControlContainer extends Container<PlayerControlState
 	setChapterDuration = (duration) => {
 		this.setState({ chapterDuration: duration });
 	}
+
+    // Set the selected hashmap for the chapter modal
+    setSelected = (newMap) => {
+        this.setState({ selected: newMap }); 
+    }
 
 	// Set the total length of the chapter 
 	setTotalLength = (totalLength) => {

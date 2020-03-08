@@ -30,14 +30,16 @@ interface ChapterProps extends AudioBookProps, StackNavProps {};
 export default class ChapterListModal extends PlayerController { 
 
 	getSelected = (chapterIndex: number): boolean => {
+		const selected = this.props.playerControlContainer.state.selected;	
 		console.log("Get Selected = " + chapterIndex);	
-		console.log("state selected = " + this.state.selected!.get(chapterIndex));	
+		console.log("state selected = " + selected.get(chapterIndex));	
 		console.log("\n");
 
-		return this.state.selected!.get(chapterIndex) || false;
+		return selected.get(chapterIndex) || false;
 	}
 
 	// const onSelect = React.useCallback(
+	/*	
 	onSelect = async(id: number) => {
 		console.log("On Select = " + id);	
 		const selected = this.state.selected;
@@ -54,17 +56,18 @@ export default class ChapterListModal extends PlayerController {
 
 		// play the selected chapter using the PlayerController
 		await this.playSelectedChapter(id);
-		
-		// Set the selected component and play the selected chapter
-		this.setState({ selected: newSelected });
-
 	}
-	
+	*/
+
 	render() {
 		const chapterList: Chapter[] = this.props.navigation.state.params!.chapterList;	
 		const chapterIndex: number = this.props.playerControlContainer.state.chapterIndex;	
+		const selected = this.props.playerControlContainer.state.selected;	
 		// selected={this.getSelected(item.CHAPTER)}
 		console.log("chapterIndex = " + chapterIndex);
+		console.log("Player container selected state:");
+		console.log(selected);	
+		console.log("\n");
 
 		return (
 			<SafeAreaView style={styles.listContainer}>
@@ -73,12 +76,12 @@ export default class ChapterListModal extends PlayerController {
 					renderItem={({ item }) => (
 						<ChapterListItem 
 							chapter={item} 
-							onSelect={() => this.onSelect(item.CHAPTER)} 
 							selected={this.getSelected(item.CHAPTER)}
+							onSelect={() => this.playSelectedChapter(chapterIndex)}	
 						/>
 					)}
 					keyExtractor={item => item.CHAPTER.toString()}
-					extraData={this.state.selected}
+					extraData={selected}
 				/>
 			</SafeAreaView>
 		);	
