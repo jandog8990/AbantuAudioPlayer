@@ -107,7 +107,6 @@ export default class FullPlayer extends PlayerController {
 
 			// Load the book container books for viewing in the chapter list
 			console.log("Fetch JSon DONE => setSelected()!");	
-			// this.initializeSelectedMap();
 		} catch(err) {
 			console.error(err);
 		}
@@ -259,9 +258,8 @@ export default class FullPlayer extends PlayerController {
 					onForward={this.onForward}
 					paused={paused}/>
 				<View>
-				<TouchableOpacity onPress={() => {
-					this.props.navigation.navigate('ChapterList',{
-						chapterList: chapterList, chapterIndex: chapterIndex})}}>
+				<TouchableOpacity onPress={() => 
+					this.props.navigation.navigate('ChapterList')}>
 					<View style={styles.chapterButton}> 
 					<Image source={require('../../../img/2x/baseline_format_list_bulleted_black_36dp.png')} style={styles.buttons} />
 					<Text style={styles.chapters}>Chapters</Text>	
