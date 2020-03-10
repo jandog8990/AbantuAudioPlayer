@@ -54,7 +54,8 @@ export default class ChapterListModal extends PlayerController {
 		console.log("Current chapter = " + currentChapter);
 		console.log("\n");
 
-		selectedMap.set(currentChapter, !selected.get(currentChapter));
+		selectedMap.set(currentChapter, true); 
+		// selectedMap.set(currentChapter, !selected.get(currentChapter));
 
 		this.setState({ selected: selectedMap });
 		// this.props.playerControlContainer.setSelected(selectedMap);	
@@ -93,34 +94,13 @@ export default class ChapterListModal extends PlayerController {
 		});
 
 		// set the selected item to true
-		newSelected.set(chapterIndex, !selected.get(chapterIndex));
-		// this.props.playerControlContainer.setSelected(newSelected);
+		newSelected.set(chapterIndex, true); 
+		// newSelected.set(chapterIndex, !selected.get(chapterIndex));
 
 		this.setState({ selected: newSelected });
 
 		this.playSelectedChapter(chapterIndex);
 	} 
-
-	// const onSelect = React.useCallback(
-	/*	
-	onSelect = async(id: number) => {
-		console.log("On Select = " + id);	
-		const selected = this.state.selected;
-		console.log("selected = " + selected);	
-		
-		const newSelected = new Map(selected!);
-		const chapterList = this.props.navigation.state.params!.chapterList;
-
-		[...newSelected.keys()].forEach(key => {
-			newSelected.set(key, false);
-		});
-
-		newSelected.set(id, !selected!.get(id));
-
-		// play the selected chapter using the PlayerController
-		await this.playSelectedChapter(id);
-	}
-	*/
 	
 	render() {
 		const selected = this.state.selected;
@@ -134,20 +114,6 @@ export default class ChapterListModal extends PlayerController {
 		console.log(selected);
 		console.log("\n");
 
-		/*
-		<Subscribe to={[PlayerControlContainer]}>
-		{(playerControlContainer: PlayerControlContainer) => (
-		)}
-		</Subscribe>
-		*/
-
-		/*
-			{
-				state: {chapterList, chapterIndex, selected}
-			}
-			onSelect={() => this.playSelectedChapter(
-				playerControlContainer.state.chapterIndex)}	
-		*/
 		return (
 
 			<SafeAreaView style={styles.listContainer}>
