@@ -75,6 +75,7 @@ export default class PlayerControlContainer extends Container<PlayerControlState
 
     // Playing current chapter sets the states for the current play
     playingCurrentChapter = (duration: number, isLoaded: boolean, paused: boolean) => {
+         
         this.setState({
             chapterDuration: duration,
             isLoaded: isLoaded,

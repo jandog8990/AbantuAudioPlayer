@@ -16,13 +16,6 @@ import LibraryContainer from 'src/containers/LibraryContainer';
 import PlayerControlContainer from '../../containers/PlayerControlContainer';
 import PlayerController from '../../controllers/PlayerController';
 
-import { StackNavProps } from '../../interfaces/props/StackNavProps';
-import { AudioBookProps } from 'src/interfaces/props/AudioBookProps';
-
-// TODO: To implement this.state for a component we need to design
-// the interface like the props so that we have a map of what our
-// state will be in regard to the structure
-interface ChapterProps extends AudioBookProps, StackNavProps {};
 /**
  * Chapter list modal screen accessed by the main book player
  * page, this page can also be used in other playlists
@@ -37,8 +30,8 @@ export default class ChapterListModal extends PlayerController {
 	initializeSelectedMap = () => {
 		console.log("Initialize Selected Map:");	
 		// const selected = this.props.playerControlContainer.state.selected;	
-		const selected = this.state.selected;
-		const selectedMap = new Map(selected!);
+		const selected = this.state.selected!;
+		const selectedMap = new Map(selected);
 		// const chapterList = this.props.navigation.state.params!.chapterList; 
 		const chapterList = this.props.playerControlContainer.state.chapterList;
 		chapterList.forEach(chapter => {
@@ -64,7 +57,7 @@ export default class ChapterListModal extends PlayerController {
 	isChapterSelected = (chapterIndex: number): boolean => {
 		const isLoaded = this.props.playerControlContainer.state.isLoaded;	
 		const currentChapter = this.props.playerControlContainer.state.chapterIndex; 
-		const selected = this.state.selected; 
+		const selected = this.state.selected!; 
 
 		// const selected = this.props.playerControlContainer.state.selected;	
 		console.log("Get Selected = " + chapterIndex);	
@@ -82,7 +75,7 @@ export default class ChapterListModal extends PlayerController {
 	setSelected = (chapterIndex: number) => {
 		console.log("Set Selected = " + chapterIndex);	
 		// const selected = this.props.playerControlContainer.state.selected;	
-		const selected = this.state.selected;
+		const selected = this.state.selected!;
 		console.log("state.selected:");
 		console.log(selected);	
 		

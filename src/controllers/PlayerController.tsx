@@ -5,34 +5,33 @@ import {
 } from 'react-native';
 
 // Custom objects and models from other TypeScript files
-import { AudioBookProps } from '../interfaces/props/AudioBookProps';
-import { StackNavProps } from '../interfaces/props/StackNavProps';
+import { AudioStackProps } from '../interfaces/props/AudioStackProps';
 
 // Import data objects or Types for the Book and Chapter models
 import { Chapter, initializeChapter } from '../models/Chapter';
 import { Book, initializeBook } from '../models/Book';
+import { Genre } from 'src/models/Genre';
 
 import ChapterDetails from 'src/screens/AudioPlayer/ChapterDetails';
 import PlayerControlContainer from 'src/containers/PlayerControlContainer';
 import MusicControl from 'react-native-music-control';
 import { Command } from '../enums/Command';
 
-// Combine audio book and navigation props
-interface PlayerControlProps extends AudioBookProps, StackNavProps {};
-
 
 // Screen height for the current app
 const screenHeight = Dimensions.get("window").height;
 
 interface PlayerControlState {
-	selected: Map<number,boolean>
+	isLoading?: boolean,
+	dataSource?: Genre[],
+	selected?: Map<number, boolean>
 }
 
 /**
  * PlayeController handles all control functionality for the full player
  * as well as the embedded player -> sends state to the PlayerControlContainer
  */
-export default class PlayerController extends Component<PlayerControlProps, PlayerControlState> {
+export default class PlayerController extends Component<AudioStackProps, PlayerControlState> {
 
 	constructor(props) {
 		super(props);
@@ -41,7 +40,7 @@ export default class PlayerController extends Component<PlayerControlProps, Play
 			selected: new Map<number, boolean>()
 		}
 	}
-	
+
 	// Initialize MusicControl module
 	initializeMusicControl = () => {
 		// Enable BG and audio interruptions	
@@ -53,19 +52,19 @@ export default class PlayerController extends Component<PlayerControlProps, Play
 	initializeActionControl = () => {
 		// MusicControl methods on action calls
 		MusicControl.on(Command.play, () => {
-			console.log("Music Control Playing!");	
+			console.log("Music Control Playing!");
 			this.playCurrentChapter();
 		});
 		MusicControl.on(Command.pause, () => {
-			console.log("Music Control Pause!");	
+			console.log("Music Control Pause!");
 			this.pauseCurrentChapter();
 		});
 		MusicControl.on(Command.nextTrack, () => {
-			console.log("Music Control Next!");	
+			console.log("Music Control Next!");
 			this.playNextChapter();
 		});
 		MusicControl.on(Command.previousTrack, () => {
-			console.log("Music Control Previous!");	
+			console.log("Music Control Previous!");
 			this.playPreviousChapter();
 		})
 	}
@@ -75,12 +74,12 @@ export default class PlayerController extends Component<PlayerControlProps, Play
 		// Enable BG and audio interruptions	
 		MusicControl.enableBackgroundMode(true);
 		// MusicControl.handleAudioInterruptions(true);	
-		
+
 		// Enable playback and language options 
 		MusicControl.enableControl('changePlaybackPosition', true)
 		// MusicControl.enableControl('enableLanguageOption', false)
 		// MusicControl.enableControl('disableLanguageOption', false)
-		
+
 		// Basic Controls
 		MusicControl.enableControl('play', true)
 		MusicControl.enableControl('pause', true)
@@ -89,10 +88,10 @@ export default class PlayerController extends Component<PlayerControlProps, Play
 		MusicControl.enableControl('previousTrack', true)
 
 		// Seeking settings
-        // MusicControl.enableControl('seekForward', false);
-        // MusicControl.enableControl('seekBackward', false);
-        // MusicControl.enableControl('skipForward', false);
-        // MusicControl.enableControl('skipBackward', false);
+		// MusicControl.enableControl('seekForward', false);
+		// MusicControl.enableControl('seekBackward', false);
+		// MusicControl.enableControl('skipForward', false);
+		// MusicControl.enableControl('skipBackward', false);
 
 		// Android Specific Options
 		// MusicControl.enableControl('setRating', true)
@@ -100,19 +99,66 @@ export default class PlayerController extends Component<PlayerControlProps, Play
 		// MusicControl.enableControl('remoteVolume', false)
 
 		// Always allow user to close notification on swipe
-		MusicControl.enableControl('closeNotification', true, {when: 'always'})
-		
+		MusicControl.enableControl('closeNotification', true, { when: 'always' })
+
 		// Default - Allow user to close notification on swipe when audio is paused
-		MusicControl.enableControl('closeNotification', true, {when: 'paused'})
-		
+		MusicControl.enableControl('closeNotification', true, { when: 'paused' })
+
 		// Never allow user to close notification on swipe
-		MusicControl.enableControl('closeNotification', true, {when: 'never'})
+		MusicControl.enableControl('closeNotification', true, { when: 'never' })
 	}
-	
+
+	/**
+	 * Methods that actually interact with the FullyPlayer, the MiniPlayer,
+	 * and also the SeekBar as well as other button components
+	 */
+
+	// Play method for playing the chapters
+	onPlay = (data) => {
+		console.log("On Press Play(data)!");
+		console.log("data duration = " + data.duration);
+		console.log("\n");
+
+		this.playCurrentChapter();
+	}
+
+	// On pause from the pause button and also the slider
+	onPause = () => {
+		console.log("On Pause:");
+		console.log("Props Player Control Container Paused = TRUE");
+
+		// this.setState({ paused: true });
+		this.props.playerControlContainer.setPaused(true);
+	}
+
+	// End method for for the player ending
+	onEnd = () => {
+		this.props.playerControlContainer.setBookEnded(true);
+	}
+
+	// Common functions for changing player state for the FullPlayer and the BottomPlayer
+	playBook = (book) => {
+
+		// First set the state of a playing book (will this cause race condition)
+		this.props.playerControlContainer.playingBook(book);
+
+		// Issue query for the book chapters and set the foundChapters
+		// TODO: This is where the API call to the chapters endpoint will come in
+		// playerStore.foundChapters();
+		// playerStore.setCurrentChapter(0);
+		// this.playCurrentChapter();
+
+	}
+
+	/**
+	 * Common methods between the AudioPlayer and the back end MusicController
+	 * this also allows us to share functionality between components 
+	 */
+
 	// Set the MusicControl to playing
 	setControlNowPlaying = (audioBook: Book, chapter: Chapter) => {
-		this.enableMusicControl();	
-			// rating: 0 
+		this.enableMusicControl();
+		// rating: 0 
 		MusicControl.setNowPlaying({
 			title: chapter.TITLE || "",
 			artwork: chapter.PHOTO_LOC || "",
@@ -123,31 +169,18 @@ export default class PlayerController extends Component<PlayerControlProps, Play
 		});
 
 		// const elapsedTime = this.props.playerControlContainer.state.currentPosition;
-		const elapsedTime = this.props.playerControlContainer.state.currentTime;	
+		const elapsedTime = this.props.playerControlContainer.state.currentTime;
 		// MusicControl.setPlayback({
-			// maxVolume: 10,
-			// rating: MusicControl.RATING_HEART 
+		// maxVolume: 10,
+		// rating: MusicControl.RATING_HEART 
 		MusicControl.updatePlayback({
 			state: MusicControl.STATE_PLAYING,
 			elapsedTime: elapsedTime,
 		});
 	}
-	
-	// Common functions for changing player state for the FullPlayer and the BottomPlayer
-    playBook = (book) => {
 
-		// First set the state of a playing book (will this cause race condition)
-        this.props.playerControlContainer.playingBook(book);
 
-		// Issue query for the book chapters and set the foundChapters
-		// TODO: This is where the API call to the chapters endpoint will come in
-		// playerStore.foundChapters();
-		// playerStore.setCurrentChapter(0);
-		// this.playCurrentChapter();
-
-    }
-
-    // Play the current chapter (received from play, next, back, etc)
+	// Play the current chapter (received from play, next, back, etc)
 	playCurrentChapter = () => {
 		const { audioBook, chapterList, chapterIndex } = this.props.playerControlContainer.state;
 
@@ -166,20 +199,20 @@ export default class PlayerController extends Component<PlayerControlProps, Play
 		// Initialize the NowPlaying component for displaying contols
 		if (chapter) {
 			// TODO: may want to have a default logo for null vals	
-			console.log("Music Control SetNowPlaying!");	
+			console.log("Music Control SetNowPlaying!");
 			console.log(chapter);
-			console.log("\n");	
+			console.log("\n");
 
 			// Set states for the current playing chapte
 			const paused = false;
 			const isLoaded = true;
 			this.props.playerControlContainer.playingCurrentChapter(chapter.DURATION, isLoaded, paused);
-			
+
 			// Set the MusicControl module to now playing with playback 
 			this.setControlNowPlaying(audioBook, chapter);
-		}	
+		}
 	}
-	
+
 	// Play the selected chapter in the chapters list
 	// This can be previous, next and select actions from the list
 	playSelectedChapter = (chapterIndex: number) => {
@@ -197,33 +230,33 @@ export default class PlayerController extends Component<PlayerControlProps, Play
 		this.playCurrentChapter();
 	}
 
-    // Play the previous chapter in the chapters list
-    playPreviousChapter = () => {
+	// Play the previous chapter in the chapters list
+	playPreviousChapter = () => {
 		const { chapterIndex } = this.props.playerControlContainer.state;
 		const newIndex = chapterIndex - 1;
 		this.playSelectedChapter(newIndex < 0 ? 0 : newIndex);
-    }
+	}
 
-    // Play the next chapter in the chapters lis                                                                                                                                                                                                          fff                                                         cxt
-    playNextChapter = () => {
+	// Play the next chapter in the chapters lis                                                                                                                                                                                                          fff                                                         cxt
+	playNextChapter = () => {
 		// Get the state from the player control container
 		const { chapterList, chapterIndex } = this.props.playerControlContainer.state;
-		this.playSelectedChapter((chapterIndex+1) % (chapterList.length));
-    }
+		this.playSelectedChapter((chapterIndex + 1) % (chapterList.length));
+	}
 
-    // Pause the current chapter
-    pauseCurrentChapter = () => {
+	// Pause the current chapter
+	pauseCurrentChapter = () => {
 
 		// Implement MusicControl update playback for pause
 
 		// Set the player container state to paused
-		this.enableMusicControl();	
+		this.enableMusicControl();
 		this.props.playerControlContainer.setPaused(true);
-    }
+	}
 
-    // Update the play time of current chapter
-    updatePlayTime = (currentTime) => {
-		this.enableMusicControl();	
+	// Update the play time of current chapter
+	updatePlayTime = (currentTime) => {
+		this.enableMusicControl();
 
 		MusicControl.updatePlayback({
 			state: MusicControl.STATE_PLAYING,

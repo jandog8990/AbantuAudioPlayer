@@ -13,12 +13,14 @@ import {
   SafeAreaView,
   StyleSheet
 } from 'react-native';
+import Video from 'react-native-video';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+
 import AlbumArt from './AlbumArt';
 import ChapterDetails from './ChapterDetails';
 import SeekBar from './SeekBar';
 import Controls from './Controls';
-import Video from 'react-native-video';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import AudioPlayer from './AudioPlayer';
 
 import PlayerController from '../../controllers/PlayerController';
 import ChapterController from '../../controllers/ChapterController';
@@ -27,7 +29,6 @@ import ChapterController from '../../controllers/ChapterController';
 import { apiConfig } from '../../config/config';
 import { AudioBookResponse } from 'src/interfaces/network/AudioBookResponse';
 import { ChapterInfo } from '../../enums/ChapterInfo';
-import EmbeddedPlayer from './EmbeddedPlayer';
 
 import PlayerControlContainer from '../../containers/PlayerControlContainer';
 import { NavigationActions } from 'react-navigation';
@@ -39,14 +40,11 @@ export default class FullPlayer extends PlayerController {
 	// Initilize the audio player
 	chapterController: ChapterController;
 	audioPlayer;
-	navigation;
 	AUDIO; IMAGE; TITLE; AUTHOR;
 	constructor(props) {
 		super(props);
 
-		// TODO Think of how we will pass the audio player across multiple classes
-		// and also how to share code from the PlayerController
-		this.navigation = this.props.navigation;
+		// Initialize enums for the chapter controller
 		this.AUDIO = ChapterInfo.AUDIO;
 		this.IMAGE = ChapterInfo.IMAGE;
 		this.TITLE = ChapterInfo.TITLE;
@@ -119,15 +117,6 @@ export default class FullPlayer extends PlayerController {
 		return chapterIndex === chapterList.length - 1;
 	}
 
-	// Play method for playing the chapters
-	onPlay = (data) => {
-		console.log("On Press Play(data)!");
-		console.log("data duration = " + data.duration);
-		console.log("\n");
-
-		this.playCurrentChapter();
-	}
-
 	// Tracks the progress of the player
 	onProgress = (data) => {
 		const { isLoading } = this.props.playerControlContainer.state;
@@ -136,11 +125,6 @@ export default class FullPlayer extends PlayerController {
 			// This updates the time in the master player controls container
 			this.updatePlayTime(data.currentTime);
 		}
-	}
-
-	// End method for for the player ending
-	onEnd = () => {
-		this.props.playerControlContainer.setBookEnded(true);
 	}
 
 	// Handle error from the video
@@ -166,29 +150,22 @@ export default class FullPlayer extends PlayerController {
 		this.props.playerControlContainer.setPaused(false);
 	}
 
-	// On pause from the pause button and also the slider
-	onPause = () => {
-
-		// this.setState({ paused: true });
-		this.props.playerControlContainer.setPaused(true);
-	}
-
 	onBack = () => {
-
-		// Always seek to the beginning of the audio player then go to previous chapter
-		this.audioPlayer && this.audioPlayer.seek(0);
 
 		// Play the previous chapter using PlayerController
 		this.playPreviousChapter();
+
+		// Always seek to the beginning of the audio player then go to previous chapter
+		// this.audioPlayer && this.audioPlayer.seek(0);
 	}
 
 	onForward = () => {
 
-		// Seek to the beginning of the AudioPlayer
-		this.audioPlayer && this.audioPlayer.seek(0);
-
 		// Play the next chapter using PlayerController
 		this.playNextChapter();
+
+		// Seek to the beginning of the AudioPlayer
+		// this.audioPlayer && this.audioPlayer.seek(0);
 	}
 
 	/**
@@ -218,6 +195,7 @@ export default class FullPlayer extends PlayerController {
 			
 		// <TouchableOpacity onPress={() => this.props.navigation.navigate('ChapterList')}>
 		// isOpen={this.state.isOpen}
+					// playerRef={this.audioPlayer}
 
 		return (
 		<Subscribe to={[PlayerControlContainer]}>
@@ -226,21 +204,15 @@ export default class FullPlayer extends PlayerController {
 				currentPosition, chapterDuration, paused, chapterIndex, chapterListVisible}}
 		) => (
 			<SafeAreaView style={styles.container}>
-				<Video
-					source={{uri: this.chapterController.loadChapterInfo(this.AUDIO, chapterList, chapterIndex), type: "m3u8"}} // Can be a URL or a local file.
-					ref={audioPlayer => (this.audioPlayer = audioPlayer)}
-					playInBackground={true}	
-					playWhenInactive={true}	
-					ignoreSilentSwitch="ignore"
-					style={styles.audioElement}
-					paused={paused}
-					onLoad={this.setDuration} // Callback when video loads
-					onProgress={this.setCurrentTime} // Callback every ~250ms with current position using time
-					onEnd={this.onEnd} 
-					resizeMode="cover"
-					rate={rate}
-					onError={this.onError} // Callback when video cannot be loaded
-					fullscreen={false}
+				<AudioPlayer
+					chapterUrl={this.chapterController.loadChapterInfo(this.AUDIO, chapterList, chapterIndex)}
+					that={this}	
+					isPaused={paused}
+					setDuration={this.setDuration}
+					setCurrentTime={this.setCurrentTime}	
+					onEnd={this.onEnd}
+					playRate={rate}
+					onError={this.onError}	
 				/>
 				<StatusBar hidden={true} />
 				<AlbumArt url={this.chapterController.loadChapterInfo(this.IMAGE, chapterList, chapterIndex)} />
@@ -266,18 +238,6 @@ export default class FullPlayer extends PlayerController {
 					</View>
 				</TouchableOpacity>
 				</View>
-				{
-					isLoaded ? 
-					<EmbeddedPlayer
-						title={this.chapterController.loadChapterInfo(this.TITLE, chapterList, chapterIndex)}
-						author={this.chapterController.loadBookInfo(this.AUTHOR, audioBook)}
-						image={this.chapterController.loadChapterInfo(this.IMAGE, chapterList, chapterIndex)}
-						onPressPlay={this.onPlay}
-						onPressPause={this.onPause}
-						paused={paused}	
-					/> : 
-					<View/>
-				}	
 			</SafeAreaView>
 		)}
 		</Subscribe>
