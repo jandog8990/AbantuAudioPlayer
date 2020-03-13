@@ -4,12 +4,10 @@
 import React from 'react';
 import { Component } from 'react';
 import { createAppContainer } from 'react-navigation';
-import { createStackNavigator, TransitionPresets } from 'react-navigation-stack';
+import { createStackNavigator } from 'react-navigation-stack';
 // import { createBottomTabNavigator } from 'react-navigation-tabs';
 
 // Custom screen imports
-import Home from './src/screens/Home';
-import LogoTitle from './src/screens/LogoTitle';
 import { Icon } from 'react-native-elements';
 import {
 	View,	
@@ -27,10 +25,11 @@ import PlayerControlContainer from './src/containers/PlayerControlContainer';
 import ChapterListModal from './src/screens/AudioPlayer/ChapterListModal';
 
 // Props import for the audiobook and stack navigation
-import { AudioBookProps } from './src/interfaces/props/AudioBookProps';
 import { StackNavProps } from './src/interfaces/props/StackNavProps';
 
 // Audio full player and the background audioplayer component
+import Home from './src/screens/Home';
+import MainBook from './src/screens/MainBook';
 import FullPlayer from './src/screens/AudioPlayer/FullPlayer';
 import AudioPlayer from './src/screens/AudioPlayer/AudioPlayer';
 
@@ -38,7 +37,10 @@ import AudioPlayer from './src/screens/AudioPlayer/AudioPlayer';
 import ChapterController from './src/controllers/ChapterController'; 
 import PlayerController from './src/controllers/PlayerController';
 import { ChapterInfo } from './src/enums/ChapterInfo';
-import { AudioStackProps } from 'src/interfaces/props/AudioStackProps';
+
+// Import the navigation options for our screens
+import HomeNavigation from './src/screens/navigation/HomeNavigation';
+import FullPlayerNavigation from './src/screens/navigation/FullPlayerNavigation';
 
 // Needed to fix the Android screen render exceptions
 enableScreens();
@@ -80,6 +82,8 @@ export class StackNav extends PlayerController {
 	
 	// Initialize the audio player 
 	chapterController: ChapterController;
+	homeNavigation;	
+	fullPlayerNavigation;
 	audioPlayer;	
 	currentTime;	
 	AUDIO;	
@@ -91,7 +95,12 @@ export class StackNav extends PlayerController {
 		this.AUDIO = ChapterInfo.AUDIO;	
 		this.chapterController = new ChapterController();
 		this.currentTime = 0;
+
+		// Full player navigation for the main app
+		this.fullPlayerNavigation = new FullPlayerNavigation();
+		this.homeNavigation = new HomeNavigation();
 	}
+
 
 	// Main stack for controlling the entire navigation stack for the app
 	// Each screen in the stack will get its own Store depending on what it subscribes to
@@ -104,25 +113,18 @@ export class StackNav extends PlayerController {
 					playerControlContainer={this.props.playerControlContainer}
 				/>
 			),
-			navigationOptions: ({navigation}) => ({
-				headerTitle: () => <LogoTitle/>,
-				gesturesEnabled: false,	
-				headerBackTitleVisible: false,	
-				headerLeft: () =>
-					<Icon
-						containerStyle={{paddingLeft:20, paddingTop: 5}}
-						type="ionicon"
-						name={Platform.OS === "ios" ? "ios-contact" : "md-contact"}
-					/>,
-				headerRight: () =>
-					<Icon
-						containerStyle={{paddingRight:20, paddingTop: 5}}
-						type="ionicon"
-						name={Platform.OS === "ios" ? "ios-search" : "md-search"}
-					/>	
-			}),
+			navigationOptions: ({navigation}) => (this.homeNavigation.getNavigationOptions())
 		},
-    	FullPlayer: {
+		MainBook: {
+			screen: (props: StackNavProps) => (
+				<MainBook
+					{...props} 
+					libraryContainer={this.props.libraryContainer}
+					playerControlContainer={this.props.playerControlContainer}
+				/>
+			),
+		},	
+		FullPlayer: {
 			screen: (props: StackNavProps) => (
 				<FullPlayer
 					{...props} 
@@ -130,40 +132,7 @@ export class StackNav extends PlayerController {
 					playerControlContainer={this.props.playerControlContainer}
 				/>
 			),
-			navigationOptions: ({ navigation }) => {
-					//headerLeftContainerStyle: {paddingLeft: 20},	
-					//name={Platform.OS === "ios" ? "ios-down-arrow" : "md-down-arrow"}
-				return {
-					title: navigation.getParam('bookTitle', 'Full Player'),
-					gesturesEnabled: true,	
-					gestureDirection: 'vertical',	
-					...TransitionPresets.ModalSlideFromBottomIOS,
-					headerBackTitleVisible: false,	
-					headerTitleStyle: { color: 'black', fontSize: 14, width : Dimensions.get('window').width/1.6, textAlign: 'center'},	
-					headerStyle: { backgroundColor: 'white' },
-					headerTintColor: 'black',
-					headerLeft: () =>
-						<TouchableOpacity onPress={() => navigation.goBack()}>	
-						<Icon 
-							containerStyle={{paddingLeft:20, paddingTop: 5}}
-							type="material"
-							color='black'	
-							size={30}
-							name="keyboard-arrow-down"	
-						/>	
-						</TouchableOpacity>,
-					headerRight: () =>
-						<TouchableOpacity> 
-						<Icon 
-							containerStyle={{paddingRight:20, paddingTop: 0}}
-							type="material"
-							color='black'	
-							size={30}
-							name="more-vert"	
-						/>
-						</TouchableOpacity>,
-				};
-			}
+			navigationOptions: ({ navigation }) => (this.fullPlayerNavigation.getNavigationOptions(navigation))
     	},
 	}, {
 		initialRouteParams: Home,

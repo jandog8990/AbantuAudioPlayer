@@ -1,13 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * TODO: Import react native navigation and apply the unstated-demo code
- * to this test example for the Abantu database examples
- * 
- * @format
- * @flow
- */
-
 import React, { Component } from 'react';
 //import Routes from "./Routes";
 
@@ -51,6 +41,11 @@ import {ChapterInfo} from '../enums/ChapterInfo';
 import PlayerControlContainer from '../containers/PlayerControlContainer';
 import PlayerController from '../controllers/PlayerController';
 
+/**
+ * Main home screen for the Abantu Audio app, currently contains
+ * rows of Genres, this will be changing to do Abant Top Picks,
+ * Best Sellers, most listened to, etc.
+ */
 export default class Home extends PlayerController { 
 
 	chapterController: ChapterController;
