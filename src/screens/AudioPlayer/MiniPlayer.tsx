@@ -5,11 +5,14 @@ import {
 	Image,	
 	Platform,
 	StyleSheet,
+	TouchableOpacity
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 
 // export default class PlayerControls extends Component<PlayerControllerProps> {
 const MiniPlayer = ({
+	bookTitle,	
+	openFullPlayer,	
 	title,
 	author,
 	image,	
@@ -17,7 +20,14 @@ const MiniPlayer = ({
 	onPressPause,
 	paused
 }) => (
-	<View style={styles.controls}>
+	<TouchableOpacity 
+		style={styles.controls}
+		onPress={() => {
+			console.log("On Press!");	
+			console.log("book title = " + bookTitle);
+			openFullPlayer(bookTitle);
+		}}
+	>
 		<Image style={styles.cover} source={{uri: image}} /> 
 		<View style={styles.title}>
 			<Text style={styles.chapterTitle}>{title}</Text>
@@ -37,7 +47,7 @@ const MiniPlayer = ({
 			/>
 		}	
 		</View>
-	</View>
+	</TouchableOpacity>
 );
 
 export default MiniPlayer;

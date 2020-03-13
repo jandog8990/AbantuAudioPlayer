@@ -50,6 +50,7 @@ export default class ChapterController {
     // Load the book info using the Book object
     loadBookInfo = (chapterInfo: ChapterInfo, book: Book): String => {
         let dataString = "";
+
         if (this.checkBook(book)) {
             switch (chapterInfo) {
                 case (this.AUTHOR): {

@@ -190,12 +190,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttons: {
- 	width: 35,
- 	height: 35,
+ 	width: 50,
+ 	height: 50,
     tintColor: 'purple'
   },
   chapterButton: {
-    paddingTop: 30,	
+    paddingTop: 40,	
 	alignItems: 'center',
 	justifyContent: 'center',
   },

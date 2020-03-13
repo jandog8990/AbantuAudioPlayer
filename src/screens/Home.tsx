@@ -133,12 +133,16 @@ export default class Home extends PlayerController {
 		// clear any elements or props that we no longer need 
 	}
 
+	// Open the FullPlayer from the current selection
+	// TODO: This should only be available from the MiniPlayer selection
+	openFullPlayer = (title) => {
+		this.props.navigation.navigate('FullPlayer', { bookTitle: title });
+	}
+
 	// Render item function
 	_renderItem(item: Book) {
 		return (
-			<TouchableOpacity onPress={() => {
-				this.props.navigation.navigate('FullPlayer', { bookTitle: item.TITLE })
-			}}>
+			<TouchableOpacity onPress={() => { this.openFullPlayer(item.TITLE) }}>
 				<Image key={item.ISBN} style={{ width: 120, height: 180, marginRight: 10, marginTop: 12 }} source={{ uri: item.PHOTO_LOC }} />
 			</TouchableOpacity>
 		)
@@ -195,6 +199,8 @@ export default class Home extends PlayerController {
 					<View>
 
 					<MiniPlayer
+						bookTitle={audioBook.TITLE}	
+						openFullPlayer={this.openFullPlayer}
 						title={this.chapterController.loadChapterInfo(this.TITLE, chapterList, chapterIndex)}
 						author={this.chapterController.loadBookInfo(this.AUTHOR, audioBook)}
 						image={this.chapterController.loadChapterInfo(this.IMAGE, chapterList, chapterIndex)}

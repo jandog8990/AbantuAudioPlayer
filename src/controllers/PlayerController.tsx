@@ -61,19 +61,15 @@ export default class PlayerController extends Component<AudioStackProps, PlayerC
 	initializeActionControl = () => {
 		// MusicControl methods on action calls
 		MusicControl.on(Command.play, () => {
-			console.log("Music Control Playing!");
 			this.playCurrentChapter();
 		});
 		MusicControl.on(Command.pause, () => {
-			console.log("Music Control Pause!");
 			this.pauseCurrentChapter();
 		});
 		MusicControl.on(Command.nextTrack, () => {
-			console.log("Music Control Next!");
 			this.playNextChapter();
 		});
 		MusicControl.on(Command.previousTrack, () => {
-			console.log("Music Control Previous!");
 			this.playPreviousChapter();
 		})
 	}
@@ -124,17 +120,11 @@ export default class PlayerController extends Component<AudioStackProps, PlayerC
 
 	// Play method for playing the chapters
 	onPlay = (data) => {
-		console.log("On Press Play(data)!");
-		console.log("data duration = " + data.duration);
-		console.log("\n");
-
 		this.playCurrentChapter();
 	}
 
 	// On pause from the pause button and also the slider
 	onPause = () => {
-		console.log("On Pause:");
-		console.log("Props Player Control Container Paused = TRUE");
 
 		// this.setState({ paused: true });
 		this.props.playerControlContainer.setPaused(true);
@@ -143,14 +133,6 @@ export default class PlayerController extends Component<AudioStackProps, PlayerC
 	// On seek method for ffw and rwd
 	onSeek = async (time) => {
 		time = Math.round(time);
-		console.log("Player Controller (onSeek):");
-		console.log("time = " + time);
-
-		// this.audioPlayer && this.audioPlayer.seek(time);
-		//this.audioPlayer.seek(time);
-
-
-		// this.setState({ currentPosition: time, paused: false });
 
 		// Set the current position
 		await this.props.playerControlContainer.setCurrentPosition(time);
@@ -269,16 +251,8 @@ export default class PlayerController extends Component<AudioStackProps, PlayerC
 			chapter = chapterList[chapterIndex];	// get the current chapter
 		}
 
-		console.log("Play Current Chapter:");
-		console.log(chapter);
-		console.log("\n");
-
 		// Initialize the NowPlaying component for displaying contols
 		if (chapter) {
-			// TODO: may want to have a default logo for null vals	
-			console.log("Music Control SetNowPlaying!");
-			console.log(chapter);
-			console.log("\n");
 
 			// Set states for the current playing chapte
 			const paused = false;

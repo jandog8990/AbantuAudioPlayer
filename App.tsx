@@ -4,7 +4,7 @@
 import React from 'react';
 import { Component } from 'react';
 import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
+import { createStackNavigator, TransitionPresets } from 'react-navigation-stack';
 // import { createBottomTabNavigator } from 'react-navigation-tabs';
 
 // Custom screen imports
@@ -86,10 +86,6 @@ export class StackNav extends PlayerController {
 	// constructor(props: AudioBookProps) {
 	constructor(props) {
 		super(props);
-	
-		console.log("Nav props constructor:");
-		console.log(this.props);
-		console.log("\n");        
 		
 		// Chapter controller for setting audio player info
 		this.AUDIO = ChapterInfo.AUDIO;	
@@ -139,7 +135,9 @@ export class StackNav extends PlayerController {
 					//name={Platform.OS === "ios" ? "ios-down-arrow" : "md-down-arrow"}
 				return {
 					title: navigation.getParam('bookTitle', 'Full Player'),
-					gesturesEnabled: false,	
+					gesturesEnabled: true,	
+					gestureDirection: 'vertical',	
+					...TransitionPresets.ModalSlideFromBottomIOS,
 					headerBackTitleVisible: false,	
 					headerTitleStyle: { color: 'black', fontSize: 14, width : Dimensions.get('window').width/1.6, textAlign: 'center'},	
 					headerStyle: { backgroundColor: 'white' },
@@ -234,10 +232,6 @@ export class StackNav extends PlayerController {
 	render() {
 		const seekTime = playerControlContainer.state.seek;
 		if (this.currentTime != seekTime) {
-			console.log("Main App (currentTime !=== seekTime):");
-			console.log("currentTime = " + this.currentTime);
-			console.log("seekTime = " + seekTime);
-			console.log("\n");
 			this.currentTime = seekTime;
 			this.onAudioSeek(seekTime);
 		}
