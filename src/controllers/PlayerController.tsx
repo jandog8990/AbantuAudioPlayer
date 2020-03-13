@@ -143,6 +143,8 @@ export default class PlayerController extends Component<AudioStackProps, PlayerC
 	// On seek method for ffw and rwd
 	onSeek = async (time) => {
 		time = Math.round(time);
+		console.log("Player Controller (onSeek):");
+		console.log("time = " + time);
 
 		// this.audioPlayer && this.audioPlayer.seek(time);
 		//this.audioPlayer.seek(time);
