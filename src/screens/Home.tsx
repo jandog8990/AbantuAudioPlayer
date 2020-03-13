@@ -128,12 +128,6 @@ export default class Home extends PlayerController {
 		// clear any elements or props that we no longer need 
 	}
 
-	// Open the FullPlayer from the current selection
-	// TODO: This should only be available from the MiniPlayer selection
-	openFullPlayer = (title) => {
-		this.props.navigation.navigate('FullPlayer', { bookTitle: title });
-	}
-
 	// Render item function
 	_renderItem(item: Book) {
 		return (

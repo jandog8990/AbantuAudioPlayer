@@ -41,6 +41,7 @@ import { ChapterInfo } from './src/enums/ChapterInfo';
 // Import the navigation options for our screens
 import HomeNavigation from './src/screens/navigation/HomeNavigation';
 import FullPlayerNavigation from './src/screens/navigation/FullPlayerNavigation';
+import StackNavigation from './src/screens/navigation/StackNavigation';
 
 // Needed to fix the Android screen render exceptions
 enableScreens();
@@ -84,6 +85,7 @@ export class StackNav extends PlayerController {
 	chapterController: ChapterController;
 	homeNavigation;	
 	fullPlayerNavigation;
+	stackNavigation;	
 	audioPlayer;	
 	currentTime;	
 	AUDIO;	
@@ -99,6 +101,7 @@ export class StackNav extends PlayerController {
 		// Full player navigation for the main app
 		this.fullPlayerNavigation = new FullPlayerNavigation();
 		this.homeNavigation = new HomeNavigation();
+		this.stackNavigation = new StackNavigation();
 	}
 
 
@@ -113,7 +116,7 @@ export class StackNav extends PlayerController {
 					playerControlContainer={this.props.playerControlContainer}
 				/>
 			),
-			navigationOptions: ({navigation}) => (this.homeNavigation.getNavigationOptions())
+			navigationOptions: () => (this.homeNavigation.getNavigationOptions())
 		},
 		MainBook: {
 			screen: (props: StackNavProps) => (
@@ -123,6 +126,7 @@ export class StackNav extends PlayerController {
 					playerControlContainer={this.props.playerControlContainer}
 				/>
 			),
+			navigationOptions: () => (this.stackNavigation.getNavigationOptions())
 		},	
 		FullPlayer: {
 			screen: (props: StackNavProps) => (

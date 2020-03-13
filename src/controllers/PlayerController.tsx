@@ -118,6 +118,17 @@ export default class PlayerController extends Component<AudioStackProps, PlayerC
 	 * and also the SeekBar as well as other button components
 	 */
 
+	// Open the FullPlayer from the current selection
+	// TODO: This should only be available from the MiniPlayer selection
+	openFullPlayer = (title) => {
+		// Test for the miniplayer
+		if (title == "Chants") {
+			this.props.navigation.navigate('MainBook');
+		} else {
+			this.props.navigation.navigate('FullPlayer', { bookTitle: title });
+		}	
+	}
+
 	// Play method for playing the chapters
 	onPlay = (data) => {
 		this.playCurrentChapter();
