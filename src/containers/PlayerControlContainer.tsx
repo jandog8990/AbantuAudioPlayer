@@ -1,6 +1,7 @@
 import {Container} from 'unstated';
 import { Book, initializeBook } from '../models/Book';
 import { Chapter } from 'src/models/Chapter';
+import Video from 'react-native-video';
 
 // Player control states for interacting with player
 // TODO: CurrentTime may not be used in the player
@@ -8,6 +9,7 @@ interface PlayerControlState {
 	audioBook: Book,
     chapterList: Chapter[],
     chapterListVisible: boolean,
+    seek: number, 
     rate: number,
     paused: boolean,
     ended: boolean,
@@ -29,6 +31,7 @@ export default class PlayerControlContainer extends Container<PlayerControlState
     state: PlayerControlState = {
 		audioBook: initializeBook(),
         chapterList: [], 
+        seek: 0, 
         chapterListVisible: false,
 		rate: 1,
         paused: true,
@@ -95,7 +98,13 @@ export default class PlayerControlContainer extends Container<PlayerControlState
      * Set states for global Unstated subscribers 
      */ 
     
-     // Set the book ended boolean when we finish audio
+    // Set the seek time for the audio player 
+    setSeek = (time) => {
+        console.log("setSeek = " + time); 
+        this.setState({ seek: time });
+    }
+    
+    // Set the book ended boolean when we finish audio
     setBookEnded = (ended) => {
         this.setState({ ended: ended });
     }

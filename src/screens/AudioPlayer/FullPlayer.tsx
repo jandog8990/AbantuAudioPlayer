@@ -50,13 +50,6 @@ export default class FullPlayer extends PlayerController {
 		this.TITLE = ChapterInfo.TITLE;
 		this.AUTHOR = ChapterInfo.AUTHOR;
 
-		// Create bindings for the functions used in player
-		this.setCurrentTime = this.setCurrentTime.bind(this);
-		this.setDuration = this.setDuration.bind(this);
-		this.onSeek = this.onSeek.bind(this); 
-		this.onBack = this.onBack.bind(this); 
-		this.onForward = this.onForward.bind(this);
-
 		// Global chapter controller object for chapter info
 		this.chapterController = new ChapterController();
 	}
@@ -127,68 +120,6 @@ export default class FullPlayer extends PlayerController {
 		}
 	}
 
-	// Handle error from the video
-	onError = (error) => {
-		console.log("Audio player error occurred: ");
-		console.error(error);
-		console.log("\n");
-	}
-
-	// On seek method for ffw and rwd
-	onSeek = (time) => {
-		time = Math.round(time);
-
-		// this.audioPlayer && this.audioPlayer.seek(time);
-		this.audioPlayer.seek(time);
-
-		// this.setState({ currentPosition: time, paused: false });
-
-		// Set the current position
-		this.props.playerControlContainer.setCurrentPosition(time);
-
-		// Set the paused to false (play)
-		this.props.playerControlContainer.setPaused(false);
-	}
-
-	onBack = () => {
-
-		// Play the previous chapter using PlayerController
-		this.playPreviousChapter();
-
-		// Always seek to the beginning of the audio player then go to previous chapter
-		// this.audioPlayer && this.audioPlayer.seek(0);
-	}
-
-	onForward = () => {
-
-		// Play the next chapter using PlayerController
-		this.playNextChapter();
-
-		// Seek to the beginning of the AudioPlayer
-		// this.audioPlayer && this.audioPlayer.seek(0);
-	}
-
-	/**
-	 * Update methods for updating the current state of the player
-	 */
-
-	// Upade the chapter duration with the current chapter
-	setDuration = (data) => {
-
-		// this.setState({chapterDuration: Math.floor(data.duration)});
-		this.props.playerControlContainer.setTotalLength(Math.floor(data.duration));
-	}
-
-	// Set the current position of the chapter using current time
-	setCurrentTime = (data) => {
-
-		// this.setState({currentPosition: Math.floor(data.currentTime)});
-		this.props.playerControlContainer.setCurrentPosition(Math.floor(data.currentTime));
-
-		// Update the play time for the MusicControl
-		this.updatePlayTime(data.currentTime);
-	}
-
   	render() {
 		// TODO Need a better way of checking the chapters and the book objects rather
 		// than doing a check for each component run a check once and just update what we need
@@ -196,7 +127,18 @@ export default class FullPlayer extends PlayerController {
 		// <TouchableOpacity onPress={() => this.props.navigation.navigate('ChapterList')}>
 		// isOpen={this.state.isOpen}
 					// playerRef={this.audioPlayer}
-
+		/*	
+		<AudioPlayer
+			chapterUrl={this.chapterController.loadChapterInfo(this.AUDIO, chapterList, chapterIndex)}
+			that={this}	
+			isPaused={paused}
+			setDuration={this.setDuration}
+			setCurrentTime={this.setCurrentTime}	
+			onEnd={this.onEnd}
+			playRate={rate}
+			onError={this.onError}	
+		/>
+		*/	
 		return (
 		<Subscribe to={[PlayerControlContainer]}>
 		{(
@@ -204,16 +146,7 @@ export default class FullPlayer extends PlayerController {
 				currentPosition, chapterDuration, paused, chapterIndex, chapterListVisible}}
 		) => (
 			<SafeAreaView style={styles.container}>
-				<AudioPlayer
-					chapterUrl={this.chapterController.loadChapterInfo(this.AUDIO, chapterList, chapterIndex)}
-					that={this}	
-					isPaused={paused}
-					setDuration={this.setDuration}
-					setCurrentTime={this.setCurrentTime}	
-					onEnd={this.onEnd}
-					playRate={rate}
-					onError={this.onError}	
-				/>
+
 				<StatusBar hidden={true} />
 				<AlbumArt url={this.chapterController.loadChapterInfo(this.IMAGE, chapterList, chapterIndex)} />
 				<ChapterDetails title={this.chapterController.loadChapterInfo(this.TITLE, chapterList, chapterIndex)} /> 

@@ -30,6 +30,11 @@ import Timing from './utils/Timing';
   const timing = new Timing(); 
   const elapsed = timing.minutesAndSeconds(currentPosition);
   const remaining = timing.minutesAndSeconds(chapterDuration - currentPosition);
+  console.log("SeekBar:");
+  console.log("current position = " + currentPosition); 
+  console.log("elapsed = " + elapsed);
+  console.log("\n"); 
+  
   return (
     <View style={styles.container}>
       <View style={{flexDirection: 'row'}}>

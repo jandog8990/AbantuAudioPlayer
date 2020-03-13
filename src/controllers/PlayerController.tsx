@@ -36,6 +36,15 @@ export default class PlayerController extends Component<AudioStackProps, PlayerC
 	constructor(props) {
 		super(props);
 
+		// Create bindings for the functions used in player
+		/*	
+		this.setCurrentTime = this.setCurrentTime.bind(this);
+		this.setDuration = this.setDuration.bind(this);
+		this.onSeek = this.onSeek.bind(this); 
+		this.onBack = this.onBack.bind(this); 
+		this.onForward = this.onForward.bind(this);
+		*/
+
 		this.state = {
 			selected: new Map<number, boolean>()
 		}
@@ -131,9 +140,75 @@ export default class PlayerController extends Component<AudioStackProps, PlayerC
 		this.props.playerControlContainer.setPaused(true);
 	}
 
+	// On seek method for ffw and rwd
+	onSeek = async (time) => {
+		time = Math.round(time);
+
+		// this.audioPlayer && this.audioPlayer.seek(time);
+		//this.audioPlayer.seek(time);
+
+
+		// this.setState({ currentPosition: time, paused: false });
+
+		// Set the current position
+		await this.props.playerControlContainer.setCurrentPosition(time);
+		
+		// this.props.playerControlContainer.state.audioPlayer.seek(time);
+		await this.props.playerControlContainer.setSeek(time);
+		
+		// Set the paused to false (play)
+		await this.props.playerControlContainer.setPaused(false);
+	}
+
+	onBack = () => {
+
+		// Play the previous chapter using PlayerController
+		this.playPreviousChapter();
+
+		// Always seek to the beginning of the audio player then go to previous chapter
+		// this.audioPlayer && this.audioPlayer.seek(0);
+	}
+
+	onForward = () => {
+
+		// Play the next chapter using PlayerController
+		this.playNextChapter();
+
+		// Seek to the beginning of the AudioPlayer
+		// this.audioPlayer && this.audioPlayer.seek(0);
+	}
+	
 	// End method for for the player ending
 	onEnd = () => {
 		this.props.playerControlContainer.setBookEnded(true);
+	}
+
+	// Handle error from the video
+	onError = (error) => {
+		console.log("Audio player error occurred: ");
+		console.error(error);
+		console.log("\n");
+	}
+
+	/**
+	 * Update methods for updating the current state of the player
+	 */
+
+	// Upade the chapter duration with the current chapter
+	setDuration = (data) => {
+
+		// this.setState({chapterDuration: Math.floor(data.duration)});
+		this.props.playerControlContainer.setTotalLength(Math.floor(data.duration));
+	}
+
+	// Set the current position of the chapter using current time
+	setCurrentTime = (data) => {
+
+		// this.setState({currentPosition: Math.floor(data.currentTime)});
+		this.props.playerControlContainer.setCurrentPosition(Math.floor(data.currentTime));
+
+		// Update the play time for the MusicControl
+		this.updatePlayTime(data.currentTime);
 	}
 
 	// Common functions for changing player state for the FullPlayer and the BottomPlayer

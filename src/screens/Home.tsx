@@ -44,6 +44,7 @@ import { Book } from 'src/models/Book';
 import { apiConfig } from '../config/config';
 
 // Import the embedded player for each screen
+import AudioPlayer from './AudioPlayer/AudioPlayer';
 import MiniPlayer from './AudioPlayer/MiniPlayer';
 import ChapterController from '../controllers/ChapterController';
 import {ChapterInfo} from '../enums/ChapterInfo';
@@ -179,11 +180,11 @@ export default class Home extends PlayerController {
 				</View>
 			)
 		}
-		
+
 		return (
 		<Subscribe to={[PlayerControlContainer]}>
 		{(
-			{state: {isLoaded, paused, audioBook, chapterList, chapterIndex}}
+			{state: {isLoaded, paused, rate, audioBook, chapterList, chapterIndex}}
 		) => (
 			<SafeAreaView style={styles.sectionContainer}>
 				<ScrollView bounces={false} style={styles.genreScrollView}>
@@ -191,6 +192,8 @@ export default class Home extends PlayerController {
 				</ScrollView>
 				{
 					isLoaded ?
+					<View>
+
 					<MiniPlayer
 						title={this.chapterController.loadChapterInfo(this.TITLE, chapterList, chapterIndex)}
 						author={this.chapterController.loadBookInfo(this.AUTHOR, audioBook)}
@@ -198,7 +201,9 @@ export default class Home extends PlayerController {
 						onPressPlay={this.onPlay}
 						onPressPause={this.onPause}
 						paused={paused}	
-					/> : 
+					/> 
+					</View>	
+					: 
 					<View/>
 				}	
 			</SafeAreaView>

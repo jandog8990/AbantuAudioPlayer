@@ -12,6 +12,7 @@ import Home from './src/screens/Home';
 import LogoTitle from './src/screens/LogoTitle';
 import { Icon } from 'react-native-elements';
 import {
+	View,	
 	Platform,
 	Dimensions,
 	TouchableOpacity
@@ -28,8 +29,16 @@ import ChapterListModal from './src/screens/AudioPlayer/ChapterListModal';
 // Props import for the audiobook and stack navigation
 import { AudioBookProps } from './src/interfaces/props/AudioBookProps';
 import { StackNavProps } from './src/interfaces/props/StackNavProps';
+
+// Audio full player and the background audioplayer component
 import FullPlayer from './src/screens/AudioPlayer/FullPlayer';
+import AudioPlayer from './src/screens/AudioPlayer/AudioPlayer';
+
 // import ChapterListModal from './src/screens/AudioPlayer/ChapterListModal';
+import ChapterController from './src/controllers/ChapterController'; 
+import PlayerController from './src/controllers/PlayerController';
+import { ChapterInfo } from './src/enums/ChapterInfo';
+import { AudioStackProps } from 'src/interfaces/props/AudioStackProps';
 
 // Needed to fix the Android screen render exceptions
 enableScreens();
@@ -41,17 +50,14 @@ const playerControlContainer = new PlayerControlContainer();
 
 declare var global: {HermesInternal: null | {}};
 
-export default class App extends Component {
-
-	constructor(props: any) {
-		super(props);
+export default class App extends Component<StackNavProps, any> {
 	
-		console.log("Nav props constructor:");
-		console.log(this.props);
-		console.log("\n");                                                                             
+	constructor(props) {
+		super(props);
+                                                                     
 		// this.setTodoProps.bind(this);
 	}
-
+	
 	render = () => {
 		return (
 		<Provider inject={[libraryContainer, playerControlContainer]}>
@@ -69,18 +75,30 @@ export default class App extends Component {
 }
 
 // Class for the StackNavigation that takes props through an interface
-export class StackNav extends Component<AudioBookProps, any> {
-	constructor(props: AudioBookProps) {
+// export class StackNav extends Component<AudioBookProps, any> {
+export class StackNav extends PlayerController { 
+	
+	// Initialize the audio player 
+	chapterController: ChapterController;
+	audioPlayer;	
+	currentTime;	
+	AUDIO;	
+	// constructor(props: AudioBookProps) {
+	constructor(props) {
 		super(props);
+	
+		console.log("Nav props constructor:");
+		console.log(this.props);
+		console.log("\n");        
+		
+		// Chapter controller for setting audio player info
+		this.AUDIO = ChapterInfo.AUDIO;	
+		this.chapterController = new ChapterController();
+		this.currentTime = 0;
 	}
 
 	// Main stack for controlling the entire navigation stack for the app
 	// Each screen in the stack will get its own Store depending on what it subscribes to
-	/*
-	navigationOptions: {
-		tabBarLabel: 'Abantu Audio',
-	},
-	*/
 	MainStack = createStackNavigator({
 		Home: {
 			screen: (props: StackNavProps) => (
@@ -165,17 +183,6 @@ export class StackNav extends Component<AudioBookProps, any> {
 	});
 
 	// Create the modal stack navigator to handle things like the chapter list
-	/*
-	screen: (props: StackNavProps) => (
-		<FullPlayer
-			{...props} 
-			libraryContainer={this.props.libraryContainer}
-			playerControlContainer={this.props.playerControlContainer}
-		/>
-	),
-						<CloseView style={{ elevation: 10 }}>
-						</CloseView>
-	*/
 	RootStack = createStackNavigator({
 		MainApp: {
 			screen: this.MainStack,
@@ -218,10 +225,41 @@ export class StackNav extends Component<AudioBookProps, any> {
 	// AppContainer = createAppContainer(this.MainStack);
 	AppContainer = createAppContainer(this.RootStack);
 
-	
+	// Audio seek for moving the player toward the seek time
+	onAudioSeek = (time) => {
+		this.audioPlayer.seek(time);
+	}	 
+
 	// Render the root stack navigator with the containers as props
 	render() {
-		return <this.AppContainer /> 
+		const seekTime = playerControlContainer.state.seek;
+		if (this.currentTime != seekTime) {
+			console.log("Main App (currentTime !=== seekTime):");
+			console.log("currentTime = " + this.currentTime);
+			console.log("seekTime = " + seekTime);
+			console.log("\n");
+			this.currentTime = seekTime;
+			this.onAudioSeek(seekTime);
+		}
+		return (
+			<View style={{ flex: 1 }}>
+			<this.AppContainer /> 
+			<AudioPlayer
+				chapterUrl={this.chapterController.
+					loadChapterInfo(this.AUDIO, 
+						playerControlContainer.state.chapterList, 
+						playerControlContainer.state.chapterIndex)
+					}
+				that={this}	
+				isPaused={playerControlContainer.state.paused}
+				setDuration={this.setDuration}
+				setCurrentTime={this.setCurrentTime}	
+				onEnd={this.onEnd}
+				playRate={playerControlContainer.state.rate}
+				onError={this.onError}	
+			/>		
+			</View>		
+		);
 	}
 }	// End of StackNav
 
